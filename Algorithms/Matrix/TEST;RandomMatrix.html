@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<!-- @Author: MULLIGANACEOUS -->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8"/>
+	<title>Demo Site</title>
+	<!-- CCS Style Sheet -->
+	<style>
+		H1 {
+			font-family: "Century Gothic";
+			font-size: 20pt;
+			color: magenta;
+		}
+
+		.monospaced {
+			font-family: "Consolas","Courier New";
+			font-weight: bold;
+			font-style: normal;
+			font-size: 8pt;
+		}
+
+		.striped1 {
+			background: repeating-linear-gradient( 
+				1deg, rgba(255,0,0,0.2), 
+				rgba(0,255,0,0.2) 32px, 
+				rgba(0,0,255,0.2) 64px, 
+				rgba(255,255,0,0.2) 96px );
+		}
+
+        .radial1 {
+            background: repeating-radial-gradient( 
+				circle, transparent, transparent 48px, 
+				rgb(255,0,0,0.25) 64px, rgb(255,165,0,0.25) 72px, rgb(255,255,0,0.25) 80px,
+				rgb(0,255,0,0.25) 88px, rgb(0,0,255,0.25) 96px, 
+				rgb(75,0,130,0.25) 104px, rgb(238,130,238,0.20) 112px, 
+				transparent 120px, transparent 999px);
+        }
+	</style>
+</head>
+<body>
+	<script type="text/javascript" src="matrix.js"></script> <!-- Add Matrix test -->
+	<script type="text/javascript" src="../Datastructures/sampling.js"></script> <!-- Add Matrix test -->
+	<script type="text/javascript" src="../Expressions/rational.js"></script>
+	<h1>Basic Matrix Test</h1>
+	<table style="border:2px dotted brown; box-shadow: rgba(200,220,240,5) 10px 10px inset ">
+		<tr style="background-color: rgba(50, 100, 150, 0.3)">
+			<td style="background-color: aqua" colspan="2">
+				<div class="monospaced" id="matrix.A">OMG</div>
+			</td>
+			<td class="striped1">
+				<div class="monospaced" id="matrix.B">OMG</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="monospaced" id="matrix.Z">zOMG</div>
+			</td>
+			<td>
+				<div class="monospaced" id="matrix.S">zOMG</div>
+			</td>
+			<td>
+				<div class="monospaced" id="matrix.E">zOMG</div>
+			</td>
+			<td style="background: repeating-linear-gradient(
+				1rad, black, blue 12px,
+				white 12px, white 24px,
+				gray 24px, silver 36px); color:magenta">
+				<div class="monospaced" id="matrix.R">zOMG</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="radial1">
+				<div class="monospaced" id="matrix.Z2">zOMG</div>
+			</td>
+			<td class="radial1">
+				<div class="monospaced" id="matrix.S2">zOMG</div>
+			</td>
+			<td class="radial1">
+				<div class="monospaced" id="matrix.E2">zOMG</div>
+			</td>
+			<td style="background: repeating-linear-gradient(
+				1rad, black, blue 12px,
+				white 12px, white 24px,
+				gray 24px, silver 36px); color:magenta">
+				<div class="monospaced" id="matrix.R2">zOMG</div>
+			</td>
+		</tr>
+	</table>
+
+	<script type="text/javascript">
+		A = matrix(10, 7)
+		A.demo()
+		document.getElementById("matrix.A").innerHTML = A.toString()
+		B = matrix(2, 2)
+		B.demo()
+		document.getElementById("matrix.B").innerHTML = B.toString()
+
+		X = matrix(3)
+		X.entry[0][0] = 2
+		X.entry[1][1] = 2
+		X.entry[2][2] = 4
+
+		Y = matrix(3)
+		Y.entry[2][0] = 30
+		Y.entry[1][1] = 70
+		Y.entry[0][2] = 60
+
+		// Random matrix
+		Z = matrix(8)
+		j = shuffle([0, 1, 2, 3, 4, 5, 6, 7]);
+		for (var k = 0; k < j.length && k < Z.rows; k++) {
+			for (c = j[k]; c < Z.entry[0].length; c++) {
+				Z.entry[k][c] = BigInt(Math.trunc(Math.random() * 10))
+			}
+		}
+		document.getElementById("matrix.Z").innerHTML = Z.toString().replace(/ 0.000/g, "<span style=\"color:red\"> 0.000 </span>");
+		document.getElementById("matrix.S").innerHTML = echelonform(Z).toString().replace(/ 0.000/g, "<span style=\"color:silver\"> 0.000 </span>");
+		document.getElementById("matrix.E").innerHTML = reducedform(Z).toString().replace(/ 0.000/g, " ―――――");
+		document.getElementById("matrix.R").innerHTML = det(Z) + ";" + tr(Z);
+
+		// Random matrix
+		Z = matrix(4, 5)
+		j = shuffle([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3]);
+		for (var k = 0; k < j.length && k < Z.rows; k++) {
+			for (c = j[k]; c < Z.entry[0].length; c++) {
+                Z.entry[k][c] = BigInt(Math.trunc(Math.random() * 20 - 10))
+			}
+		}
+		document.getElementById("matrix.Z2").innerHTML = Z.toString().replace(/ 0.000/g, "<span style=\"color:red\"> 0.000 </span>");
+		document.getElementById("matrix.S2").innerHTML = echelonform(Z).toString().replace(/ 0.000/g, "<span style=\"color:silver\"> 0.000 </span>");
+		document.getElementById("matrix.E2").innerHTML = reducedform(Z, leading = true).toString().replace(/ 0.000/g, " ―――――");
+		document.getElementById("matrix.R2").innerHTML = det(Z) + ";" + tr(Z);
+	</script>
+
+	<h1>Gaussian Elimination Test</h1>
+	<div style="overflow:scroll;">
+		<table class="monospaced" style="table-layout:fixed; white-space:nowrap">
+			<tr class="striped1">
+				<td id="gaussian.A1" style="width:512px"></td>
+				<td id="gaussian.E1" style="width:512px"></td>
+				<td id="gaussian.R1" style="width:512px"></td>
+				<td id="gaussian.S1" style="width:64px"></td>
+			</tr>
+			<tr class="radial1">
+				<td id="gaussian.A2" style="width:512px"></td>
+				<td id="gaussian.E2" style="width:512px"></td>
+				<td id="gaussian.R2" style="width:512px"></td>
+				<td id="gaussian.S2" style="width:64px"></td>
+			</tr>
+			<tr>
+				<td id="gaussian.A3" style="width:512px"></td>
+				<td id="gaussian.E3" style="width:512px"></td>
+				<td id="gaussian.R3" style="width:512px"></td>
+				<td id="gaussian.S3" style="width:64px"></td>
+			</tr>
+			<tr>
+				<td id="gaussian.A4" style="width:512px"></td>
+				<td id="gaussian.E4" style="width:512px"></td>
+				<td id="gaussian.R4" style="width:512px"></td>
+				<td id="gaussian.S4" style="width:64px"></td>
+			</tr>
+			<tr style="font-size:6px; background: repeating-linear-gradient( 
+				1deg, rgba(255,0,0,0.2), 
+				rgba(0,255,0,0.2) 32px, 
+				rgba(0,0,255,0.2) 64px, 
+				rgba(255,255,0,0.2) 96px )
+
+				repeating-linear-gradient( 
+				1rad, rgba(255,0,0,0.2), 
+				rgba(0,255,0,0.2) 32px, 
+				rgba(0,0,255,0.2) 64px, 
+				rgba(255,255,0,0.2) 96px );">
+				<td id="gaussian.A5" style="width:512px"></td>
+				<td id="gaussian.E5" style="width:512px"></td>
+				<td id="gaussian.R5" style="width:512px"></td>
+				<td id="gaussian.S5" style="width:64px"></td>
+			</tr>
+		</table>
+	</div>
+
+	<script>
+		function randommatrix(x, m, n, j, leading=false, exactness=1) {
+            // Random matrix
+            var A = matrix(m, n)
+            j = shuffle(j);
+            for (var k = 0; k < j.length && k < A.rows; k++) {
+				for (c = j[k]; c < A.entry[0].length; c++) {
+					var exact = Math.random() < exactness;
+					if (exact)
+						A.entry[k][c] = BigInt(Math.trunc(Math.random() * 65536) - 32768)
+					else
+                        A.entry[k][c] = Number(Math.trunc(Math.random() * 65536) - 32768)
+                }
+            }
+            document.getElementById("gaussian.A" + x).innerHTML = A.toString().replace(/ 0.000/g, "<span style=\"color:red\"> 0.000 </span>");
+            document.getElementById("gaussian.E" + x).innerHTML = echelonform(A).toString().replace(/ 0.000/g, "<span style=\"color:silver\"> 0.000 </span>");
+            document.getElementById("gaussian.R" + x).innerHTML = reducedform(A, leading).toString().replace(/ 0.000/g, " ―――――");
+            document.getElementById("gaussian.S" + x).innerHTML = det(A) + ";" + tr(A);
+		}
+		randommatrix(1,8,8,[0,0,0,0,0,0,0,0])
+		randommatrix(2, 8, 9, [0, 0, 0, 0, 0, 0, 0, 0], true)
+		randommatrix(3,24,24,[0,0,0,0,0,0,0,0,1,1,1,1,1,2,2,2,3,3,4,4,5,5,5,6,7,8,8,9,12,15,16,18,20,21,22,22],true)
+		randommatrix(4,24,25,[0,0,0,0,0,0,0,0,1,1,1,1,1,2,2,2,3,3,4,4,5,5,5,6,7,8,8,9,12,15,16,18,20,21,22,22,23,23,24],true, 1)
+		randommatrix(5, 48, 48, [
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+            4, 4, 4, 4, 4, 4, 4, 4,
+            5, 5, 5, 5, 5, 5, 5,
+            6, 6, 6, 6, 6, 6, 6, 6,
+            7, 7, 7, 7, 7, 7, 7,
+            8, 8, 8, 8, 8,
+            9, 9, 9,
+            10, 10, 10, 10, 10,
+            11,
+            12, 12, 12, 12,
+            13, 13, 13,
+            14,
+            15, 15,
+            16, 16, 16,
+            17,
+            18, 18,
+            19,
+            20, 20,
+            21, 21, 21,
+            22, 22, 22,
+            23, 23, 23,
+            24, 24, 24, 24, 24,
+            25, 25, 25,
+            26, 26,
+            27, 27,
+            28, 29, 30,
+            32, 32, 32,
+            36, 36, 36,
+            40, 42,
+            48, 48,
+            49, 50, 54, 60,
+            64, 64, 64,
+            66, 70,
+            72, 72,
+            80, 86, 90,
+            96, 96, 99,
+            100, 100,
+            104, 111, 112,
+            120, 120, 121,
+            125, 126, 127, 128], true, 1)
+	</script>
+
+</body>
+</html>

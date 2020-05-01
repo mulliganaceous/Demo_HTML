@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>M12</title>
+    <style>
+        h1 {
+            font-family: "Century Gothic"
+        }
+
+        canvas.mathieu {
+            background: black;
+            border: 2px solid gray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mathieu's game</h1>
+    <canvas class="mathieu" id="mathieu" width="512" height="512">
+    </canvas>
+    <script type="text/javascript" src="Permutation.js"></script>
+    <script type="text/javascript">
+        // Color code
+        var colorset = ["white", "red", "yellow", "green", "blue", "magenta", "#DD9999", "#DDDD99", "#99DD99", "#9999DD", "#DD99DD", "gray"]
+
+        // Draw the nodes
+        var gamescreen = document.getElementById("mathieu");
+        var ctx = gamescreen.getContext("2d");
+        var dim = document.getElementById("mathieu").getAttribute("width");
+        var origin = dim / 2;
+        var rInner = 96;
+        var rOuter = 180;
+        var rOppos = 250;
+        ctx.font = "24px Century Gothic";
+        ctx.lineWidth = 3;
+
+        console.log(g)
+
+        // Fill in slots
+        function graph(m) {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, dim, dim);
+            var elementinplace = m.matrix[0];
+            var text = elementinplace.toString(16).toUpperCase();
+
+            // Axis vertex
+            ctx.fillStyle = colorset[elementinplace];
+            ctx.strokeStyle = colorset[0];
+            ctx.arc(origin, origin, 32, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.fillText(text, origin - 5, origin);
+            ctx.beginPath();
+
+            // Adjacent pentagon
+            for (var k = 1; k <= 5; k++) {
+                elementinplace = m.matrix[k];
+                ctx.fillStyle = colorset[elementinplace];
+                ctx.strokeStyle = colorset[k];
+                text = elementinplace.toString(16).toUpperCase();
+                var angle = (k - 1) * Math.PI / 5;
+
+                ctx.arc(origin + rInner * Math.sin(2 * angle), origin - rInner * Math.cos(2 * angle), 32, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.fillText(text, origin + rInner * Math.sin(2 * angle) - 5, origin - rInner * Math.cos(2 * angle));
+                ctx.beginPath();
+            }
+
+            // Opposite pentagon
+            for (var k = 6; k <= 10; k++) {
+                elementinplace = m.matrix[k];
+                ctx.fillStyle = colorset[elementinplace];
+                ctx.strokeStyle = colorset[k];
+                text = elementinplace.toString(16).toUpperCase();
+                var angle = (k - 1) * Math.PI / 5;
+
+                ctx.arc(origin - rOuter * Math.sin(2 * angle), origin + rOuter * Math.cos(2 * angle), 32, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.fillText(text, origin - rOuter * Math.sin(2 * angle) - 5, origin + rOuter * Math.cos(2 * angle));
+                ctx.beginPath();
+            }
+
+            // Opposite vertex
+            elementinplace = m.matrix[11];
+            ctx.fillStyle = colorset[elementinplace];
+            ctx.strokeStyle = colorset[11];
+            ctx.arc(origin, origin, rOppos, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            text = elementinplace.toString(16).toUpperCase();
+            for (var k = 1; k <= 5; k++) {
+                var angle = (k - 1) * Math.PI / 5;
+                console.log(elementinplace.toString(16).toUpperCase())
+                ctx.fillText(text, origin - (rOppos - 16) * Math.sin(2 * angle) - 10, origin + (rOppos - 16) * Math.cos(2 * angle) + 10);
+            }
+        }
+
+        /**
+         *
+         */
+        function enumerateAllMathieu(n) {
+            m = permutation(12)
+            i = m.idnumber() + "";
+            var trij = {};
+            trij[i] = m.matrix.toString();
+            for (var k = 1; k < n; k++) {
+                m.cycle(move[Math.floor(Math.random() * 2)])
+                i = m.idnumber() + "";
+                trij[i] = m.matrix.toString();
+            }
+            var order = 0;
+            for (key in trij) {
+                order += 1
+            }
+            console.log(order);
+            return trij;
+        }
+    </script>
+
+    <!-- Save Image -->
+    document.getElementById("mathieu")
+</body>
+</html>
