@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Grapher Software</title>
+    <link rel="stylesheet" href="Mulliganaceous2.css">
+    <style>
+        h1 {
+            width: 12in;
+        }
+        canvas {
+            display:inline-block!important;
+            border-width: 3pt;
+            border-color: black;
+            border-style: solid;
+            border-collapse: collapse;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shortest Path Station<br><st>--Mulliganaceous--</st></h1>
+    <p></p>
+    <table style="border:1px solid black">
+        <tr>
+            <th style="width: 3in">Graph</th>
+            <th style="width: 3in">Text form</th>
+            <th style="width: 3in">Heap</th>
+            <th style="width: 3in">Edge Status</th>
+            <th style="width: 3in">Vertex Status</th>
+        </tr>
+        <tr>
+            <td style="vertical-align:top">
+                <canvas id="graph" width="1024" height="1024" style="border: 2px solid black"></canvas>
+            </td>
+            <td style="vertical-align:top" rowspan=2;>
+                <pre><p id="graph[S]" style="font-family: monospace; font-size: 8pt">...</p></pre>
+            </td>
+            <td style="vertical-align:top" rowspan=2;>
+                <pre><p id="graph[H]" style="font-family: monospace; font-size: 8pt">...</p></pre>
+            </td>
+            <td style="vertical-align:top" rowspan=2;>
+                <pre><p id="graph[E]" style="font-family: monospace; font-size: 8pt">...</p></pre>
+            </td>
+            <td style="vertical-align:top" rowspan=2;>
+                <pre><p id="graph[V]" style="font-family: monospace; font-size: 8pt">...</p></pre>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top">
+                <pre><p id="graph[K]" style="font-family: monospace; font-size: 8pt">...</p></pre>
+            </td>
+        </tr>
+    </table>
+    
+    <script type="text/javascript">
+        const LANDMARK = "H";
+        const STATION = "F";
+        const O = 512;
+        const rV = 12;
+        const OBJECTSTRING = function(obj) {
+            var a = [];
+            for (var element in obj) {
+                a.push(element + ":\t" + obj[element].valueOf())
+            }
+            return a.join("\n");
+        }
+
+        class StationedGraph {
+            /**
+             */
+            constructor(id){
+                this.name = 'StationedGraph';
+                this.v = {};
+                this.e = {};
+                this.size = 0;
+                this.id = id;
+            }
+
+            canvas() {
+                return document.getElementById(this.id);
+            }
+
+            infobox() {
+                return document.getElementById(this.id + "'");
+            }
+
+            get vertices() {
+                return this.v;
+            }
+
+            vertex(k) {
+                return this.v[k];
+            }
+
+            get edges() {
+                return this.e;
+            }
+
+            edge(k1, k2) {
+                var s = this.e[[k1, k2]];
+                if (s === undefined)
+                    s = this.e[[k2, k1]];
+                return s;
+            }
+
+            guiReset() {
+                const CANVAS = document.querySelector("#" + this.id); 
+                const ctx = CANVAS.getContext('2d');
+                ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
+            }
+
+            gui(statuses = {}) {
+                console.log("Updated GUI with " + Object.keys(statuses).length + " extra info");
+                const CANVAS = document.querySelector("#" + this.id); 
+                const ctx = CANVAS.getContext('2d');
+
+                const COLORS = ["fuchsia", "blue", "green", "#FF7F00", "navy", "saddlebrown", "teal", "purple", "gray"]
+                const HIGHER = function(n) {
+                    if (n < COLORS.length)
+                        return "gold";
+                    var red = 255 - (1 - 1/((n - COLORS.length)/24 + 1))*200;
+                    var green = 215 - (1 - 1/((n - COLORS.length)/24 + 1))*200;
+                    var blue = 0;
+                    return "rgb(" + red + "," + green + "," + blue + ")";
+                }
+                const INFO_V = statuses["nearestStation"];
+                const INFO_E = statuses["edgeUsed"];
+                const HEAP = statuses["heap"];
+                
+                for (var k in this.e) {
+                    var s1s2 = this.e[k];
+
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'black';
+                    var dx = s1s2.v[1].z[0] - s1s2.v[0].z[0];
+                    var dy = s1s2.v[1].z[1] - s1s2.v[0].z[1];
+                    var d = Math.sqrt(dx*dx + dy*dy) + 0.0;
+
+                    // Color edges based on usage status
+                    if (INFO_E) {
+                        if (INFO_E[k][1] >= 0 && INFO_E[k][1] < COLORS.length)
+                            ctx.strokeStyle = COLORS[INFO_E[k][1]];
+                        else if (INFO_E[k][1] >= 0)
+                            ctx.strokeStyle = HIGHER(INFO_E[k][1]);
+                        else if (INFO_E[k][1] == -1) {
+                            if (statuses["hide"] >= 2)
+                                ctx.strokeStyle = "transparent";
+                            else
+                                ctx.strokeStyle = "red";
+                        }
+                        if (INFO_E[k][0] > 0 && INFO_E[k][1] === null) {
+                            if (statuses["hide"] >= 1)
+                                ctx.strokeStyle = "transparent";
+                            else
+                                ctx.strokeStyle = "silver";
+                        }
+                    }
+                    // Draw edges; appearance is ratio of Euclidean distance and actual distance.
+                    if (s1s2.w/d >= 12) {
+                        ctx.lineWidth = 1;
+                        ctx.setLineDash([1, 4]);
+                    }
+                    if (s1s2.w/d >= 4) {
+                        ctx.lineWidth = 1;
+                        ctx.setLineDash([3, 5]);
+                    }
+                    if (s1s2.w/d >= 2) {
+                        ctx.lineWidth = 1;
+                        ctx.setLineDash([3, 3]);
+                    }
+                    else if (s1s2.w/d > 1) {
+                        ctx.lineWidth = 1;
+                        ctx.setLineDash([7, 1])
+                    }
+                    else if (s1s2.w/d >= 0.7) {
+                        ctx.lineWidth = 1;
+                        ctx.setLineDash([])
+                    }
+                    else if (s1s2.w/d >= 0.25) {
+                        ctx.setLineDash([])
+                        ctx.lineWidth = 2;	
+                    }
+                    else {
+                        ctx.setLineDash([])
+                        ctx.lineWidth = 3;	
+                    }
+                    ctx.moveTo(O + s1s2.v[0].z[0], O - s1s2.v[0].z[1]);
+                    ctx.lineTo(O + s1s2.v[1].z[0], O - s1s2.v[1].z[1]);
+                    ctx.stroke();
+                }
+
+                ctx.beginPath();
+                ctx.linewidth = 1;
+                ctx.setLineDash([]);
+                for (var k in this.v) {
+                    var s = this.vertex(k);
+
+                    // Color vertices based on usage status
+                    if (INFO_V) {
+                        if (INFO_V[k] && INFO_V[k][1] < COLORS.length)
+                            ctx.fillStyle = COLORS[INFO_V[k][1]];
+                        else if (INFO_V[k] && INFO_V[k][1] != -1 && INFO_V[k][1] != null)
+                            ctx.fillStyle = HIGHER(INFO_V[k][1]);
+                        ctx.font = '10px monospace';
+                        var dfh = INFO_V[k][0];
+                        if (dfh != Infinity)
+                            ctx.fillText(dfh, O + s.z[0], O - s.z[1] - 15);
+                    }
+                    if (s.s == LANDMARK) {
+                        ctx.strokeStyle = 'black';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(O + s.z[0], O - s.z[1], rV, 0, Math.PI*2)
+                        ctx.stroke()
+                    }
+                    if (s.s == STATION) {
+                        if (s.k < COLORS.length)
+                            ctx.strokeStyle = COLORS[s.k];
+                        else
+                            ctx.strokeStyle = HIGHER(k);
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        ctx.rect(O + s.z[0] - rV, O - s.z[1] - rV, rV*2, rV*2)
+                        ctx.stroke();
+                    }
+
+                    ctx.fillStyle = "black";
+                    ctx.font = 'bold 12px monospace';
+                    ctx.fillText(s.k, O + s.z[0]-7, O - s.z[1]+5);
+                }
+                if (HEAP) {
+                    var h = HEAP.peek();
+                    if (h) {
+                        h = this.vertex(h[0][1]);
+                        if (INFO_V && INFO_V[h.k][1] < COLORS.length)
+                            ctx.strokeStyle = COLORS[INFO_V[h.k][1]];
+                        else
+                            ctx.strokeStyle = "black";
+                        ctx.beginPath();
+                        ctx.arc(O + h.z[0], O - h.z[1], rV*1.25, 0, Math.PI*2)
+                        ctx.stroke()
+                    }
+                }
+                ctx.restore();
+                
+            }
+
+            /** Add a new numbered vertex to the graph.
+             */
+            addVertex(location, subset) {
+                this.v[this.size] = new Vertex(this.size, location, subset);
+                this.size++;
+
+                return 0;
+            }
+
+            /** Add new edge to graph given weight and keys of vertices.
+             */
+            addEdge(k1, k2, w) {
+                var edge = new Edge(this.vertex(k1), this.vertex(k2), w);
+                if (this.edge(k1, k2) != undefined)
+                    return 1;
+                if (k1 == k2 || w === undefined)
+                    return 1;
+
+                this.e[[k1, k2]] = edge;
+                var s1 = this.vertex(k1);
+                var s2 = this.vertex(k2);
+                s1.neighbors.push(edge)
+                s2.neighbors.push(edge)
+
+                return 0;
+            }
+
+            attach(k1, g, k2, w) {
+                if (k2.constructor.name === "array" && w.constructor.name === "array")
+                    return; // TODO
+                var offset = g.size;
+            }
+
+            toString() {
+                var sa = ["Vertices (" + Object.keys(this.v).length + ")"];
+                for (var n in this.v) {
+                    sa.push(this.v[n]);
+                    for (var nv = 0; nv < this.v[n].neighbors.length; nv++)
+                        sa.push("\t" + this.v[n].neighbors[nv]);
+                }
+                sa.push("Edges (" + Object.keys(this.e).length + ")");
+                for (var n in this.e)
+                    sa.push(n + "\t" + this.e[n]);
+                return sa.join('\n');
+            }
+        }
+
+        class Vertex {
+            constructor(position, location, subset) {
+                this.name = 'Vertex';
+                this.k = position;
+                this.z = location;
+                this.s = subset;
+                this.neighbors = new NeighborArray()
+            }
+
+            toString() {
+                return this.k + ":\t" + this.s + "(" + this.z + ")\t";
+            }
+        }
+
+        class Edge {
+            constructor(V1, V2, w) {
+                this.name = 'Edge';
+                this.v = [V1, V2];
+                this.w = w;
+            }
+
+            edgekey() {
+                return [this.v[0].k, this.v[1].k];
+            }
+
+            destination(vn) {
+                if (this.v[0] === vn)
+                    return this.v[1];
+                if (this.v[1] === vn)
+                    return this.v[0];
+                return null;
+            }
+
+            toString() {
+                return this.v[0].k + " > " + this.v[1].k + ":  \t" + this.w + " unit";
+            }
+        }
+
+        class NeighborArray extends Array {
+            toString() {
+                var sa = [];
+                for (var n = 0; n < this.length; n++)
+                    sa.push("\t" + this[n])
+                return sa.join("\n")
+            }
+        }
+
+        class ElementMinheap {
+            constructor() {
+                this.rep = []
+            }
+
+            static leftnode = function(k) {
+                return 2*(k+1)-1;
+            }
+
+            static rightnode = function(k) {
+                return 2*(k+1);
+            }
+
+            static parentnode = function(k) {
+                return Math.floor((k-1) / 2);
+            }
+
+            length() {
+                return this.rep.length;
+            }
+
+            addElement(element, priority) {
+                var parentnode = ElementMinheap.parentnode;
+                this.rep.push([element, priority])
+                var k = this.rep.length - 1;
+                while (k > 0 && this.rep[k][1] < this.rep[parentnode(k)][1]) { // Parentnode is higher
+                    var swap = this.rep[k];
+                    this.rep[k] = this.rep[parentnode(k)];
+                    this.rep[parentnode(k)] = swap;
+                    k = parentnode(k);
+                }
+                return 0;
+            }
+
+            peek() {
+                return this.rep[0];
+            }
+
+            extractMin() {
+                const leftnode = ElementMinheap.leftnode;
+                const rightnode = ElementMinheap.rightnode;
+
+                var min = this.rep[0][0]; // The element [0] on the top [0] of the heap.
+                var bub = this.rep.pop();
+
+                if (this.length() > 0) {
+                    var k = 0;
+                    this.rep[0] = bub;
+
+                    var k2 = 0;
+                    while (k != -1) {
+                        if (leftnode(k) >= this.rep.length && rightnode(k) >= this.rep.length)
+                            k = -1; // 00
+                        else {
+                            // Find the best children
+                            if (leftnode(k) < this.rep.length) { // Left node is present
+                                k2 = leftnode(k); // Lx
+                                if (rightnode(k) < this.rep.length && this.rep[rightnode(k)][1] < this.rep[leftnode(k)][1])
+                                    k2 = rightnode(k); // LR
+                            }
+                            else if (rightnode(k) < this.rep.length) { // Only right node is present
+                                if (this.rep[rightnode(k)][1] < this.rep[k]) {
+                                    k2 = rightnode(k); // 0R
+                                }
+                            }
+
+                            // Determine if the best children is swappable
+                            if (this.rep[k2][1] < this.rep[k][1]) { // k2 == k == 0 if both do not work
+                                var swap = this.rep[k];
+                                this.rep[k] = this.rep[k2];
+                                this.rep[k2] = swap;
+                                k = k2;
+                            }
+                            else // Stop loop because all child nodes have higher priority and so on.
+                                k = -1;
+                        }
+                    }	
+                }
+
+                return min;
+            }
+
+            toString() {
+                return this.rep.join("\n");
+            }
+        }
+
+        /**
+         * Please be wary of the difference between a key of a vertex or edge and the
+         * actual vertex or edge being added.
+         */
+        class Algorithm {
+            constructor(graph) {
+                this.graph = graph;
+                this.nearestStation = {}; // [0] is the distance, [1] is the firestation key, [2] is the station nearer
+                this.edgeUsed = {}; // [0] is the number of uses, [1] is the tree it belongs
+                this.edgeheap = new ElementMinheap(); // [first node, immediate destination]
+                this.H = {};
+                this.F = {};
+                this.steps = 0;
+                this.conflicts = 0;
+                this.complexity = 0;
+            }
+
+            searchNeighbors(curnode, curdistance) {}
+
+            initialize(withGui = null) {
+                const G = this.graph;
+                const nearestStation = this.nearestStation;
+                const edgeUsed = this.edgeUsed;
+                const edgeheap = this.edgeheap;
+                const H = this.H;
+                const F = this.F;
+
+                // Initialization
+                for (var nodekey in G.vertices) {
+                    nearestStation[nodekey] = [Infinity, null, null];
+                    if (G.vertex(nodekey).s === STATION)
+                        F[nodekey] = G.vertex(nodekey)
+                    if (G.vertex(nodekey).s === LANDMARK)
+                        H[nodekey] = G.vertex(nodekey)
+                }
+                for (var edgekey in G.edges) {
+                    edgeUsed[edgekey] = [0, null];
+                }
+
+                // Initial step analyzes all edges of landmarks directly connected to a firestation
+                for (var stationkey in F) {
+                    var station = G.vertex(stationkey);
+                    // Traverse through all neighbors of firestation
+                    for (var k = 0; k < station.neighbors.length; k++) {
+                        nearestStation[stationkey] = [0, stationkey];
+                        var neighbor = station.neighbors[k];
+                        var nextnode = neighbor.destination(station);
+
+                        edgeUsed[neighbor.edgekey()][0] += 1;
+                        if (edgeUsed[neighbor.edgekey()][1] === -1) {
+                            // Cannot use cancelled edge
+                        }
+                        if (nextnode.s === STATION) {
+                            // Redundant
+                        }
+                        else { // Edge is a landmark directly connected to a firestation
+                            // Assign edge to tree and heap only if it beats the competition
+                            // The losing edge, if there is any is cancelled.
+                            if (neighbor.w < nearestStation[nextnode.k][0]) {
+                                // Cancel previously existing edge using the next node's closer neighbor
+                                var cancellededge = G.edge(nextnode.k, nearestStation[nextnode.k][2])
+                                if (cancellededge) {
+                                    edgeUsed[cancellededge.edgekey()][1] = -1;
+                                    this.conflicts++;
+                                }
+                                
+                                // Add new element
+                                edgeheap.addElement([stationkey, nextnode.k], neighbor.w);
+                                nearestStation[nextnode.k] = [0 + neighbor.w, stationkey, stationkey]
+                                edgeUsed[neighbor.edgekey()][1] = stationkey;
+                            }
+                        }
+                        this.complexity += 1;
+                    }
+                }
+                this.steps++;
+
+                document.getElementById(G.id + "[S]").innerHTML = G.toString().replace("\n", "<br />");
+                document.getElementById(G.id + "[E]").innerHTML = OBJECTSTRING(edgeUsed).replace("\n", "<br />");
+                document.getElementById(G.id + "[H]").innerHTML = edgeheap.toString().replace("\n", "<br />");
+                document.getElementById(G.id + "[V]").innerHTML = OBJECTSTRING(nearestStation).replace("\n", "<br />");
+                if (withGui !== null)
+                    this.updateGui(withGui);
+            }
+
+            // Steps
+            step(withGui = null) {
+                const G = this.graph;
+                const nearestStation = this.nearestStation;
+                const edgeUsed = this.edgeUsed;
+                const edgeheap = this.edgeheap;
+                const H = this.H;
+                const F = this.F;
+
+                // Abort early if already finished.
+                if (edgeheap.length() === 0)
+                    return 0;
+                
+                // Obtain the landmark by looking at the farther vertex of the edge on the front of heap.
+                var currentedge = edgeheap.extractMin() // edge contains two vertex objects
+                var landmarkkey = currentedge[1];
+                var landmark = G.vertex(currentedge[1]);
+                var curdistance = nearestStation[landmarkkey][0]; // |f-h|
+                
+                // Traverse through all neighbors of landmark
+                for (var k = 0; k < landmark.neighbors.length; k++) {
+                    var neighbor = landmark.neighbors[k];
+                    var nextnode = neighbor.destination(landmark); // The other node of the edge with this landmark
+                    var totaldistance = curdistance + neighbor.w;
+
+                    edgeUsed[neighbor.edgekey()][0] += 1;
+                    if (nextnode.s === STATION) {
+                        // Cannot use
+                    }
+                    if (nearestStation[landmarkkey][2] === nextnode) {
+                        // No backtracking
+                    }
+                    if (edgeUsed[neighbor.edgekey()][1] === -1) {
+                        // Cannot use cancelled edge
+                    }
+                    else { // Must not conflict with another station
+                        // Assign edge to tree only if it beats the competition
+                        // The losing edge, if there is any is cancelled.
+                        if (totaldistance < nearestStation[nextnode.k][0]) {
+                            // Cancel previously existing edge using the next node's closer neighbor
+                            var cancellededge = G.edge(nextnode.k, nearestStation[nextnode.k][2])
+                            if (cancellededge) {
+                                edgeUsed[cancellededge.edgekey()][1] = -1;
+                                this.conflicts++;
+                            }
+                            // Add new element
+                            edgeheap.addElement([landmarkkey, nextnode.k], totaldistance);
+                            var stationkey = nearestStation[landmarkkey][1];
+                            nearestStation[nextnode.k] = [totaldistance, stationkey, landmarkkey]
+                            edgeUsed[neighbor.edgekey()][1] = stationkey;
+                        }
+                    }
+                    console.log(landmarkkey + "analyzed.");
+                    this.complexity += 1;
+                }
+                this.steps++;
+                document.getElementById(G.id + "[S]").innerHTML = G.toString().replace("\n", "<br />");
+                document.getElementById(G.id + "[E]").innerHTML = OBJECTSTRING(edgeUsed).replace("\n", "<br />");
+                document.getElementById(G.id + "[H]").innerHTML = edgeheap.toString().replace("\n", "<br />");
+                document.getElementById(G.id + "[V]").innerHTML = OBJECTSTRING(nearestStation).replace("\n", "<br />");
+                if (withGui !== null)
+                    this.updateGui(withGui);
+                return 0;
+            }
+
+            solve(vars) {
+                var T = Date.now();
+                while (this.edgeheap.length() > 0) {
+                    this.step();
+                }
+                T = Date.now() - T;
+                console.log("Algorithm completed in " + T + " ms.")
+                console.log("Complexity:\t" + this.complexity);
+                console.log("Conflicts :\t" + this.conflicts);
+                this.updateGui(vars);
+                return this.complexity;
+            }
+
+            updateGui(hide) {
+                this.graph.guiReset();
+                this.graph.gui({
+                    "nearestStation": this.nearestStation, 
+                    "edgeUsed": this.edgeUsed, 
+                    "heap": this.edgeheap,
+                    "hide": hide});
+            }
+        }
+
+        /** Generate a linear sequence of landmarks with fire stations on the ends.
+         */
+        linear = function(id, landmarks) {
+            var g = new StationedGraph(id)
+            var x = 0;
+            var w = -1;
+            var n = 0;
+            g.addVertex([x,0], STATION)
+            for (n = 0; n < landmarks.length - 1; n++) {
+                w = Math.abs(landmarks[n] - x);
+                x = landmarks[n];
+                g.addVertex([x,0], LANDMARK);
+                g.addEdge(n, n+1, w);
+            }
+            w = Math.abs(landmarks[n] - x);
+            x = landmarks[n];
+            g.addVertex([x,0], STATION)
+            g.addEdge(n, n+1, w);
+            return g;
+        }
+
+        randomgraph = function(id, F, H, f, fvars, w, wvars, p) {
+            var g = new StationedGraph(id);
+            for (var n = 0; n < F; n++) {
+                var z = f(fvars);
+                g.addVertex([z[0], z[1]], "F")
+            }
+            for (var n = 0; n < H; n++) {
+                var z = f(fvars)
+                g.addVertex([z[0], z[1]], "H")
+            }
+            for (var i = 0; i < F+H; i++) {
+                for (var j = i + 1; j < F+H; j++) {
+                    var x = Math.random();
+                    if (x <= p) {
+                        var s1 = g.vertex(i);
+                        var s2 = g.vertex(j);
+                        g.addEdge(i, j, w(s1, s2, wvars));
+                    }
+                }
+            }
+            return g;
+        }
+
+        scale = function(id, G, k, t) {
+            var H = new StationedGraph(id);
+            var n = G.size;
+            for (var hkey = 0; hkey < n; hkey++) {
+                var v = G.vertex(hkey);
+                H.addVertex([v.z[0]*k + t[0], v.z[1]*k  + t[1]],v.s);
+            }
+            for (var skey in G.edges) {
+                var edge = G.edges[skey];
+                H.addEdge(edge.v[0].k, edge.v[1].k, edge.w);
+            }
+            return H;	
+        }
+
+        round = function(id, G, r) {
+            var H = new StationedGraph(id);
+            var n = G.size;
+            for (var hkey = 0; hkey < n; hkey++) {
+                var v = G.vertex(hkey);
+                H.addVertex([r*Math.cos((hkey/n)*2*Math.PI), r*Math.sin((hkey/n)*2*Math.PI)],v.s);
+            }
+            for (var skey in G.edges) {
+                var edge = G.edges[skey];
+                H.addEdge(edge.v[0].k, edge.v[1].k, edge.w);
+            }
+            return H;
+        }
+
+    </script>
+    <script type="text/javascript">
+        var g = new StationedGraph()
+        g.addVertex([0,0], "F")
+        console.log(g.toString())
+
+        // Heap
+        h = new ElementMinheap();
+        for (var k = 0; k < 43; k++)
+            h.addElement("#"+k, Math.round(Math.random()*21));
+        console.log(h.toString());
+        while (h.length() > 0) {
+            console.log(h.extractMin() + '\t' + h);
+        }
+
+        // Linear
+        g = linear("graph", [1,4,6,8,13,18]);
+        g.addVertex([4,6],STATION)
+        g.addEdge(4,7,11)
+        g.addEdge(7,3,15)
+        console.log(g.toString())
+
+        // Inwards
+
+        // Random
+        fLocation = function(vars) {
+            var r = vars[0];
+            var p = [Math.round(Math.random()*r - r/2)/vars[1], Math.round(Math.random()*r - r/2)/vars[1]]
+            return p;
+        }
+        fDistance = function(s1, s2, vars) {
+            var dx = s2.z[0] - s1.z[0]
+            var dy = s2.z[1] - s1.z[1]
+            var w = Math.sqrt(dx*dx + dy*dy)*(Math.random()*(vars[1]-vars[0])+vars[0])
+            return Math.round(w) + Math.round(Math.random()*vars[2]*4)/4;
+        }
+        gLocation = function(vars) {
+            var t = Math.random()*2*Math.PI;
+            var r = Math.pow(Math.random(),Math.exp(-1))*vars[0];
+            var p = [Math.round(r*Math.cos(t))/vars[1], Math.round(r*Math.sin(t))/vars[1]]
+            return p;
+        }
+        var r = randomgraph("graph", 5,50,fLocation,[121,Math.exp(-1)],fDistance,[0.99,1.01,2],Math.exp(-2,5))
+        r = round("graph", r, 400);
+        r.gui();
+        a = new Algorithm(r);
+        a.initialize();
+
+        // Autosolve
+        autosolve = function(F, H, p, vars) {
+            r = randomgraph("graph", F, H,gLocation,[121,1/4],fDistance,[0.99,1.01,2], p)
+            var hide = 0;
+            if (vars["hide"])
+                hide = vars["hide"];
+            if (vars["round"])
+                r = round("graph", r, 400);
+            a = new Algorithm(r);
+            a.initialize();
+            m = Object.keys(r.edges).length;
+            return a.solve(hide)/m;
+        }
+    </script>
+</body>
+</html>
