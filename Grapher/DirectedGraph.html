@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Grapher Software</title>
+    <link rel="stylesheet" href="Mulliganaceous2.css">
+    <style>
+        h1 {
+            width: 12in;
+        }
+        canvas {
+            display:inline-block!important;
+            border-width: 3pt;
+            border-color: black;
+            border-style: solid;
+            border-collapse: collapse;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shortest Path Station<br><st>--Mulliganaceous--</st></h1>
+    <p></p>
+    <!-- FRONT END CANVAS -->
+    <table style="border:1px solid black">
+        <tr>
+            <th style="width: 3in">Graph</th>
+            <th style="width: 3in">Text form</th>
+            <th style="width: 3in">Heap</th>
+            <th style="width: 3in">Edge Status</th>
+            <th style="width: 3in">Vertex Status</th>
+        </tr>
+        <tr>
+            <td style="vertical-align:top">
+                <canvas id="graph" width="1024" height="1024" style="border: 2px solid black"></canvas>
+            </td>
+            <td style="vertical-align:top" rowspan=2;>
+                <pre><p id="graph[S]" style="font-family: monospace; font-size: 8pt">...</p></pre>
+            </td>
+            <td style="vertical-align:top" rowspan=2;>
+                <pre><p id="graph[1]" style="font-family: monospace; font-size: 8pt">...</p></pre>
+            </td>
+            <td style="vertical-align:top" rowspan=2;>
+                <pre><p id="graph[2]" style="font-family: monospace; font-size: 8pt">...</p></pre>
+            </td>
+            <td style="vertical-align:top" rowspan=2;>
+                <pre><p id="graph[3]" style="font-family: monospace; font-size: 8pt">...</p></pre>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top">
+                <pre><p id="graph[K]" style="font-family: monospace; font-size: 8pt">...</p></pre>
+            </td>
+        </tr>
+    </table>
+    
+    <!-- Implementation of Graph -->
+    <script type="text/javascript">
+        const SOURCE = "S";
+        const TARGET = "T";
+        const O = 512;
+        const rV = 12;
+        const OBJECTSTRING = function(obj) {
+            var a = [];
+            for (var element in obj) {
+                if (obj[element] === undefined)
+                    a.push(element + ":\t" + "???")
+                if (obj[element] === null)
+                    a.push(element + ":\t" + "-")
+                else
+                    a.push(element + ":\t" + obj[element].valueOf())
+            }
+            return a.join("\n");
+        }
+
+        class Graph {
+            /**Implementation of a directed graph
+             */
+            constructor(id){
+                this.name = 'Graph';
+                this.v = {};
+                this.e = {};
+                this.size = 0;
+                this.id = id;
+            }
+
+            canvas() {
+                return document.getElementById(this.id);
+            }
+
+            infobox() {
+                return document.getElementById(this.id + "'");
+            }
+
+            get vertices() {
+                return this.v;
+            }
+
+            vertex(k) {
+                return this.v[k];
+            }
+
+            get edges() {
+                return this.e;
+            }
+
+            edge(k1, k2) {
+                var s = this.e[[k1, k2]];
+                return s;
+            }
+
+            guiReset() {
+                const CANVAS = document.querySelector("#" + this.id); 
+                const ctx = CANVAS.getContext('2d');
+                ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
+            }
+
+            gui(settings, guiMethod) {
+                var T = Date.now();
+                if (!guiMethod) {
+                    plaingui(this, this.e, this.v)
+                    T = Date.now () - T
+                    console.log("Graphing completed in " + T + " ms.")
+                }
+                else {
+                    guiMethod(this, this.e, this.v, settings);
+                    T = Date.now () - T
+                    console.log("Algorithmic graphing completed in " + T + " ms.")
+                }
+            }
+
+            /** Add a new numbered vertex to the graph.
+             */
+            addVertex(location, subset) {
+                this.v[this.size] = new Vertex(this.size, location, subset);
+                this.size++;
+
+                return 0;
+            }
+
+            /** Add new edge to graph given weight and keys of vertices.
+             */
+            addEdge(k1, k2, w) {
+                var edge = new Edge(this.vertex(k1), this.vertex(k2), w);
+                if (this.edge(k1, k2) != undefined)
+                    return 1;
+                if (k1 == k2 || w === undefined)
+                    return 1;
+
+                this.e[[k1, k2]] = edge;
+                var s1 = this.vertex(k1);
+                var s2 = this.vertex(k2);
+                s1.neighbors.push(edge)
+
+                return 0;
+            }
+
+            toString() {
+                var sa = ["Vertices (" + Object.keys(this.v).length + ")"];
+                for (var n in this.v) {
+                    sa.push(this.v[n]);
+                    for (var nv = 0; nv < this.v[n].neighbors.length; nv++)
+                        sa.push("\t" + this.v[n].neighbors[nv]);
+                }
+                sa.push("Edges (" + Object.keys(this.e).length + ")");
+                for (var n in this.e)
+                    sa.push(n + "\t" + this.e[n]);
+                return sa.join('\n');
+            }
+        }
+
+        class Vertex {
+            constructor(position, location, subset) {
+                this.name = 'Vertex';
+                this.k = position;
+                this.z = location;
+                this.s = subset;
+                this.neighbors = new NeighborArray()
+            }
+
+            toString() {
+                return this.k + ":\t" + this.s + "(" + this.z + ")\t";
+            }
+        }
+
+        class Edge {
+            constructor(V1, V2, w) {
+                this.name = 'Edge';
+                this.v = [V1, V2];
+                this.w = w;
+            }
+
+            edgekey() {
+                return [this.v[0].k, this.v[1].k];
+            }
+
+            destination() {
+                return this.v[1];
+            }
+
+            toString() {
+                return this.v[0].k + " > " + this.v[1].k + ":  \t" + this.w + " unit";
+            }
+        }
+
+        class NeighborArray extends Array {
+            toString() {
+                var sa = [];
+                for (var n = 0; n < this.length; n++)
+                    sa.push("\t" + this[n])
+                return sa.join("\n")
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        /**
+         */
+        class ElementMinheap {
+            constructor() {
+                this.rep = []
+            }
+
+            static leftnode = function(k) {
+                return 2*(k+1)-1;
+            }
+
+            static rightnode = function(k) {
+                return 2*(k+1);
+            }
+
+            static parentnode = function(k) {
+                return Math.floor((k-1) / 2);
+            }
+
+            length() {
+                return this.rep.length;
+            }
+
+            addElement(element, priority) {
+                var parentnode = ElementMinheap.parentnode;
+                this.rep.push([element, priority])
+                var k = this.rep.length - 1;
+                while (k > 0 && this.rep[k][1] < this.rep[parentnode(k)][1]) { // Parentnode is higher
+                    var swap = this.rep[k];
+                    this.rep[k] = this.rep[parentnode(k)];
+                    this.rep[parentnode(k)] = swap;
+                    k = parentnode(k);
+                }
+                return 0;
+            }
+
+            peek() {
+                return this.rep[0];
+            }
+
+            extractMin() {
+                const leftnode = ElementMinheap.leftnode;
+                const rightnode = ElementMinheap.rightnode;
+
+                var min = this.rep[0][0]; // The element [0] on the top [0] of the heap.
+                var bub = this.rep.pop();
+
+                if (this.length() > 0) {
+                    var k = 0;
+                    this.rep[0] = bub;
+
+                    var k2 = 0;
+                    while (k != -1) {
+                        if (leftnode(k) >= this.rep.length && rightnode(k) >= this.rep.length)
+                            k = -1; // 00
+                        else {
+                            // Find the best children
+                            if (leftnode(k) < this.rep.length) { // Left node is present
+                                k2 = leftnode(k); // Lx
+                                if (rightnode(k) < this.rep.length && this.rep[rightnode(k)][1] < this.rep[leftnode(k)][1])
+                                    k2 = rightnode(k); // LR
+                            }
+                            else if (rightnode(k) < this.rep.length) { // Only right node is present
+                                if (this.rep[rightnode(k)][1] < this.rep[k]) {
+                                    k2 = rightnode(k); // 0R
+                                }
+                            }
+
+                            // Determine if the best children is swappable
+                            if (this.rep[k2][1] < this.rep[k][1]) { // k2 == k == 0 if both do not work
+                                var swap = this.rep[k];
+                                this.rep[k] = this.rep[k2];
+                                this.rep[k2] = swap;
+                                k = k2;
+                            }
+                            else // Stop loop because all child nodes have higher priority and so on.
+                                k = -1;
+                        }
+                    }	
+                }
+
+                return min;
+            }
+
+            toString() {
+                return this.rep.join("\n");
+            }
+        }
+
+        /**
+         * Please be wary of the difference between a key of a vertex or edge and the
+         * actual vertex or edge being added.
+         */
+        class Dijkstra {
+            constructor(graph) {
+                this.G = graph;
+                this.nearestStation = {}; // [0] is the distance, [1] is the firestation key, [2] is the station nearer
+                this.edgeUsed = {}; // [0] is the number of uses, [1] is the tree it belongs
+                this.edgeheap = new ElementMinheap(); // [first node, immediate destination]
+                this.center = {}; // Instantly determine if center is present
+
+                this.steps = 0;
+                this.conflicts = 0;
+                this.complexity = 0;
+            }
+
+            searchNeighbors(key, curdistance) {
+                var landmark = this.G.vertex(key);
+                // Traverse through all neighbors of landmark
+                for (var k = 0; k < landmark.neighbors.length; k++) {
+                    var neighbor = landmark.neighbors[k];
+                    var nextnode = neighbor.v[1]; // Destination edge
+                    var totaldistance = curdistance + neighbor.w;
+
+                    // The edge is used, consider if it will be placed in heap and used for updates.
+                    this.edgeUsed[neighbor.edgekey()][0] += 1;
+                    if (this.center[key] !== undefined) {
+                        // Cannot use
+                    }
+                    if (this.nearestStation[key][2] === nextnode) {
+                        // No backtracking
+                    }
+                    if (this.edgeUsed[neighbor.edgekey()][1] === -1) {
+                        // Cannot use cancelled edge
+                    }
+                    else { // Must not conflict with another station
+                        // Assign edge to tree only if it beats the competition
+                        // The losing edge, if there is any is cancelled.
+                        if (totaldistance < this.nearestStation[nextnode.k][0]) {
+                            // Cancel previously existing edge using the next node's closer neighbor
+                            var cancellededge = this.G.edge(this.nearestStation[nextnode.k][2], nextnode.k)
+                            if (cancellededge) {
+                                this.edgeUsed[cancellededge.edgekey()][1] = -1;
+                                this.conflicts++;
+                            }
+                            // Add new element
+                            this.edgeheap.addElement([key, nextnode.k], totaldistance);
+                            var stationkey = this.nearestStation[key][1];
+                            if (stationkey === undefined)
+                                throw new Exception();
+                            this.nearestStation[nextnode.k] = [totaldistance, stationkey, key]
+                            this.edgeUsed[neighbor.edgekey()][1] = stationkey;
+                        }
+                    }
+                    console.log(key + " analyzed.");
+                    this.complexity += 1;
+                }           
+            }
+
+            // Initial step
+            initialize(centers, withGui = 0) {
+                const G = this.G;
+                const nearestStation = this.nearestStation;
+                const edgeUsed = this.edgeUsed;
+                const edgeheap = this.edgeheap;
+                for (var k in centers) {
+                    this.center[centers[k]] = k;
+                }
+                const C = this.center;
+
+                // Initialization
+                for (var nodekey in G.vertices) {
+                    nearestStation[nodekey] = [Infinity, null, null];
+                }
+                for (var edgekey in G.edges) {
+                    edgeUsed[edgekey] = [0, null];
+                }
+
+                // Initial step analyzes all edges of landmarks directly connected to a firestation
+                for (var stationkey in C) {
+                    this.nearestStation[stationkey] = [0, stationkey, null];
+                    this.searchNeighbors(stationkey, 0)
+                }
+                this.steps++;
+
+                document.getElementById(G.id + "[S]").innerHTML = G.toString().replace("\n", "<br />");
+                document.getElementById(G.id + "[2]").innerHTML = OBJECTSTRING(edgeUsed).replace("\n", "<br />");
+                document.getElementById(G.id + "[1]").innerHTML = edgeheap.toString().replace("\n", "<br />");
+                document.getElementById(G.id + "[3]").innerHTML = OBJECTSTRING(nearestStation).replace("\n", "<br />");
+                if (withGui !== null)
+                    this.updateGui(withGui, dijkstraGui);
+            }
+
+            // Steps
+            step (withGui = null) {
+                const G = this.G;
+                const nearestStation = this.nearestStation;
+                const edgeUsed = this.edgeUsed;
+                const edgeheap = this.edgeheap;
+                const H = this.H;
+                const F = this.F;
+
+                // Abort early if already finished.
+                if (edgeheap.length() === 0)
+                    return 0;
+                
+                // Obtain the landmark by looking at the farther vertex of the edge on the front of heap.
+                var currentedge = edgeheap.extractMin() // edge contains two vertex objects
+                var landmarkkey = currentedge[1];
+                var landmark = G.vertex(currentedge[1]);
+                var curdistance = nearestStation[landmarkkey][0]; // |f-h|
+                
+                // Traverse through all neighbors of landmark
+                for (var k = 0; k < landmark.neighbors.length; k++) {
+                    this.searchNeighbors(landmarkkey, curdistance);
+                }
+
+                this.steps++;
+                document.getElementById(G.id + "[S]").innerHTML = G.toString().replace("\n", "<br />");
+                document.getElementById(G.id + "[2]").innerHTML = OBJECTSTRING(edgeUsed).replace("\n", "<br />");
+                document.getElementById(G.id + "[1]").innerHTML = edgeheap.toString().replace("\n", "<br />");
+                document.getElementById(G.id + "[3]").innerHTML = OBJECTSTRING(nearestStation).replace("\n", "<br />");
+                if (withGui)
+                    this.updateGui(withGui, dijkstraGui);
+                return 0;
+            }
+
+            solve(hidelevel) {
+                if (!this.center)
+                    return -1;
+                var T = Date.now();
+                while (this.edgeheap.length() > 0) {
+                    this.step();
+                }
+                T = Date.now() - T;
+                console.log("Algorithm completed in " + T + " ms.")
+                console.log("Complexity:\t" + this.complexity);
+                console.log("Conflicts :\t" + this.conflicts);
+                this.updateGui(hidelevel);
+                return this.complexity;
+            }
+
+            updateGui(hidelevel) {
+                this.G.guiReset();
+                var guiSettings = {
+                    "nearestStation": this.nearestStation, 
+                    "edgeUsed": this.edgeUsed, 
+                    "heap": this.edgeheap,
+                    "center": this.center,
+                    "hide": hidelevel};
+                this.G.gui(guiSettings, dijkstraGui);
+            }
+        }
+
+        /**
+         */
+        class FloydWarshall {
+
+        }
+
+        class MaxflowMincut {
+
+        }
+    </script>
+
+    <!-- IMPLEMENTATION OF GUI-->
+    <script type="text/javascript">
+    plaingui = function(G, edges, vertices) {
+        const CANVAS = document.querySelector("#" + G.id); 
+        const ctx = CANVAS.getContext('2d');
+        
+        // Edge drawing algorithm
+        for (var k in edges) {
+            var s1s2 = edges[k];
+
+            ctx.beginPath();
+            ctx.strokeStyle = 'black';
+            var dx = s1s2.v[1].z[0] - s1s2.v[0].z[0];
+            var dy = s1s2.v[1].z[1] - s1s2.v[0].z[1];
+            var d = Math.sqrt(dx*dx + dy*dy) + 0.0;
+
+            // Draw edges; appearance is ratio of Euclidean distance and actual distance.
+            if (s1s2.w/d >= 12) {
+                ctx.lineWidth = 1;
+                ctx.setLineDash([1, 4]);
+            }
+            if (s1s2.w/d >= 4) {
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 5]);
+            }
+            if (s1s2.w/d >= 2) {
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+            }
+            else if (s1s2.w/d > 1) {
+                ctx.lineWidth = 1;
+                ctx.setLineDash([7, 1])
+            }
+            else if (s1s2.w/d >= 0.7) {
+                ctx.lineWidth = 1;
+                ctx.setLineDash([])
+            }
+            else if (s1s2.w/d >= 0.25) {
+                ctx.setLineDash([])
+                ctx.lineWidth = 2;	
+            }
+            else {
+                ctx.setLineDash([])
+                ctx.lineWidth = 3;	
+            }
+
+            // Draw edge
+            ctx.moveTo(
+                O + s1s2.v[0].z[0] + rV*dx/d + 0.25*rV*dy/d, 
+                O - s1s2.v[0].z[1] - rV*dy/d + 0.25*rV*dx/d);
+            ctx.lineTo(
+                O + s1s2.v[1].z[0] - rV*dx/d + 0.25*rV*dy/d, 
+                O - s1s2.v[1].z[1] + rV*dy/d + 0.25*rV*dx/d);
+            // One sided arrows
+            ctx.stroke();
+            ctx.lineTo(
+                O + s1s2.v[1].z[0] - rV*dx/d + 0.25*rV*dy/d + 0.5*rV*dy/d - 0.5*rV*dx/d, 
+                O - s1s2.v[1].z[1] + rV*dy/d + 0.25*rV*dx/d + 0.5*rV*dx/d + 0.5*rV*dy/d);
+            ctx.stroke();
+        }
+
+        // Vertex drawing algorithm
+        ctx.beginPath();
+        ctx.linewidth = 1;
+        ctx.setLineDash([]);
+        for (var k in vertices) {
+            var s = G.vertex(k);
+
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(O + s.z[0], O - s.z[1], rV, 0, Math.PI*2)
+            ctx.stroke()
+
+            ctx.fillStyle = "black";
+            ctx.font = 'bold 12px monospace';
+            ctx.fillText(s.k, O + s.z[0]-7, O - s.z[1]+5);
+        }
+        ctx.restore();
+    }
+
+    dijkstraGui = function(G, edges, vertices, statuses = {}) {
+        console.log("Updated GUI with " + Object.keys(statuses).length + " extra info");
+        const CANVAS = document.querySelector("#" + G.id); 
+        if (!CANVAS)
+            return 1;
+        const ctx = CANVAS.getContext('2d');
+
+        const COLORS = ["fuchsia", "blue", "green", "#FF7F00", "navy", "saddlebrown", "teal", "purple", "gray"]
+        const HIGHER = function(n) {
+            if (n < COLORS.length)
+                return "gold";
+            var red = 255 - (1 - 1/((n - COLORS.length)/24 + 1))*200;
+            var green = 215 - (1 - 1/((n - COLORS.length)/24 + 1))*200;
+            var blue = 0;
+            return "rgb(" + red + "," + green + "," + blue + ")";
+        }
+        const INFO_V = statuses["nearestStation"];
+        const INFO_E = statuses["edgeUsed"];
+        const INFO_C = statuses["center"];
+        const HEAP = statuses["heap"];
+        
+        for (var k in edges) {
+            var s1s2 = edges[k];
+
+            ctx.beginPath();
+            ctx.strokeStyle = 'black';
+            var dx = s1s2.v[1].z[0] - s1s2.v[0].z[0];
+            var dy = s1s2.v[1].z[1] - s1s2.v[0].z[1];
+            var d = Math.sqrt(dx*dx + dy*dy) + 0.0;
+
+            // Color edges based on usage status
+            if (INFO_E) {
+                var colorindex = INFO_C[INFO_E[k][1]];
+                if (INFO_E[k][1] >= 0 && colorindex < COLORS.length) // Used
+                    ctx.strokeStyle = COLORS[colorindex];
+                else if (INFO_E[k][1] >= 0) // Used
+                    ctx.strokeStyle = HIGHER(colorindex);
+                else if (INFO_E[k][1] == -1) { // Cancelled
+                    if (statuses["hide"] >= 3)
+                        ctx.strokeStyle = "transparent";
+                    else
+                        ctx.strokeStyle = "red";
+                }
+                if (INFO_E[k][0] >= 1 && INFO_E[k][1] === null) { // Removed
+                    if (statuses["hide"] >= 2)
+                        ctx.strokeStyle = "transparent";
+                    else
+                        ctx.strokeStyle = "silver";
+                }
+                if (INFO_E[k][0] === 0 && HEAP.length() == 0) { // Unused
+                    if (statuses["hide"] >= 2)
+                        ctx.strokeStyle = "transparent";
+                    else
+                        ctx.strokeStyle = "silver";
+                }
+            }
+            // Draw edges; appearance is ratio of Euclidean distance and actual distance.
+            if (s1s2.w/d >= 12) {
+                ctx.lineWidth = 1;
+                ctx.setLineDash([1, 4]);
+            }
+            if (s1s2.w/d >= 4) {
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 5]);
+            }
+            if (s1s2.w/d >= 2) {
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+            }
+            else if (s1s2.w/d > 1) {
+                ctx.lineWidth = 1;
+                ctx.setLineDash([7, 1])
+            }
+            else if (s1s2.w/d >= 0.7) {
+                ctx.lineWidth = 1;
+                ctx.setLineDash([])
+            }
+            else if (s1s2.w/d >= 0.25) {
+                ctx.setLineDash([])
+                ctx.lineWidth = 2;	
+            }
+            else {
+                ctx.setLineDash([])
+                ctx.lineWidth = 3;	
+            }
+            ctx.moveTo(
+                O + s1s2.v[0].z[0] + rV*dx/d + 0.25*rV*dy/d, 
+                O - s1s2.v[0].z[1] - rV*dy/d + 0.25*rV*dx/d);
+            ctx.lineTo(
+                O + s1s2.v[1].z[0] - rV*dx/d + 0.25*rV*dy/d, 
+                O - s1s2.v[1].z[1] + rV*dy/d + 0.25*rV*dx/d);
+            ctx.stroke();
+            ctx.lineTo(
+                O + s1s2.v[1].z[0] - rV*dx/d + 0.25*rV*dy/d + 0.5*rV*dy/d - 0.5*rV*dx/d, 
+                O - s1s2.v[1].z[1] + rV*dy/d + 0.25*rV*dx/d + 0.5*rV*dx/d + 0.5*rV*dy/d);
+            ctx.stroke();
+        }
+
+        ctx.beginPath();
+        ctx.linewidth = 1;
+        ctx.setLineDash([]);
+        for (var k in vertices) {
+            var s = G.vertex(k);
+
+            // Color vertices based on usage status
+            if (INFO_V) {
+                var colorindex = INFO_C[INFO_V[k][1]];
+                if (INFO_V[k] && colorindex < COLORS.length)
+                    ctx.fillStyle = COLORS[colorindex];
+                else if (INFO_V[k] && INFO_V[k][1] != -1 && INFO_V[k][1] != null)
+                    ctx.fillStyle = HIGHER(colorindex);
+                ctx.font = '10px monospace';
+                var dfh = INFO_V[k][0];
+                if (dfh != Infinity)
+                    ctx.fillText(dfh, O + s.z[0], O - s.z[1] - 15);
+            }
+            if (INFO_C[k] !== undefined) {
+                var colorindex = INFO_C[s.k];
+                if (colorindex < COLORS.length)
+                    ctx.strokeStyle = COLORS[colorindex];
+                else
+                    ctx.strokeStyle = HIGHER(colorindex);
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.rect(O + s.z[0] - rV, O - s.z[1] - rV, rV*2, rV*2)
+                ctx.stroke();
+            }
+            else {
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(O + s.z[0], O - s.z[1], rV, 0, Math.PI*2)
+                ctx.stroke()
+            }
+
+            ctx.fillStyle = "black";
+            ctx.font = 'bold 12px monospace';
+            ctx.fillText(s.k, O + s.z[0]-7, O - s.z[1]+5);
+        }
+        if (HEAP) {
+            var h = HEAP.peek();
+            if (h) {
+                h = G.vertex(h[0][1]);
+                var colorindex = INFO_C[INFO_V[h.k][1]]
+                if (INFO_V && colorindex < COLORS.length)
+                    ctx.strokeStyle = COLORS[INFO_V[h.k][1]];
+                else
+                    ctx.strokeStyle = "black";
+                ctx.beginPath();
+                ctx.arc(O + h.z[0], O - h.z[1], rV*1.25, 0, Math.PI*2)
+                ctx.stroke()
+            }
+        }
+        ctx.restore();
+    }
+    </script>
+
+    <!-- SAMPLE GRAPH -->
+    <script type="text/javascript">
+        /** Generate a linear sequence of landmarks with fire stations on the ends.
+         */
+        linear = function(id, landmarks) {
+            var g = new Graph(id)
+            var x = 0;
+            var w = -1;
+            var n = 0;
+            g.addVertex([x,0], SOURCE)
+            for (n = 0; n < landmarks.length - 1; n++) {
+                w = Math.abs(landmarks[n] - x);
+                x = landmarks[n];
+                g.addVertex([x,0], "");
+                g.addEdge(n, n+1, w);
+            }
+            w = Math.abs(landmarks[n] - x);
+            x = landmarks[n];
+            g.addVertex([x,0], TARGET)
+            g.addEdge(n, n+1, w);
+            if (id)
+                document.getElementById(id + "[S]").innerHTML = g.toString().replace("\n", "<br />");
+            return g;
+        }
+
+        randomgraph = function(id, F, H, f, fvars, w, wvars, p) {
+            var g = new Graph(id);
+            for (var n = 0; n < F; n++) {
+                var z = f(fvars);
+                g.addVertex([z[0], z[1]], SOURCE)
+            }
+            for (var n = 0; n < H; n++) {
+                var z = f(fvars)
+                g.addVertex([z[0], z[1]], TARGET)
+            }
+            for (var i = 0; i < F+H; i++) {
+                for (var j = 0; j < F+H; j++) {
+                    var x = Math.random();
+                    if (x <= p) {
+                        var s1 = g.vertex(i);
+                        var s2 = g.vertex(j);
+                        g.addEdge(i, j, w(s1, s2, wvars));
+                    }
+                }
+            }
+            if (id)
+                document.getElementById(id + "[S]").innerHTML = g.toString().replace("\n", "<br />");
+            return g;
+        }
+
+        scale = function(id, G, k, t) {
+            var H = new Graph(id);
+            var n = G.size;
+            for (var hkey = 0; hkey < n; hkey++) {
+                var v = G.vertex(hkey);
+                H.addVertex([v.z[0]*k + t[0], v.z[1]*k  + t[1]],v.s);
+            }
+            for (var skey in G.edges) {
+                var edge = G.edges[skey];
+                H.addEdge(edge.v[0].k, edge.v[1].k, edge.w);
+            }
+            if (id)
+                document.getElementById(id + "[S]").innerHTML = H.toString().replace("\n", "<br />");
+            return H;	
+        }
+
+        round = function(id, G, r) {
+            var H = new Graph(id);
+            var n = G.size;
+            for (var hkey = 0; hkey < n; hkey++) {
+                var v = G.vertex(hkey);
+                H.addVertex([r*Math.cos((hkey/n)*2*Math.PI), r*Math.sin((hkey/n)*2*Math.PI)],v.s);
+            }
+            for (var skey in G.edges) {
+                var edge = G.edges[skey];
+                H.addEdge(edge.v[0].k, edge.v[1].k, edge.w);
+            }
+            if (id)
+                document.getElementById(id + "[S]").innerHTML = H.toString().replace("\n", "<br />");
+            return H;
+        }
+
+        var g = new Graph()
+        g.addVertex([0,0], SOURCE)
+        console.log(g.toString())
+
+        // Linear
+        g = linear("graph", [1,4,6,8,13,18]);
+        g.addVertex([4,6],SOURCE)
+        g.addEdge(4,7,11)
+        g.addEdge(7,3,15)
+        console.log(g.toString())
+
+        // Random
+        fLocation = function(vars) {
+            var r = vars[0];
+            var p = [Math.round(Math.random()*r - r/2)/vars[1], Math.round(Math.random()*r - r/2)/vars[1]]
+            return p;
+        }
+        fDistance = function(s1, s2, vars) {
+            var dx = s2.z[0] - s1.z[0]
+            var dy = s2.z[1] - s1.z[1]
+            var w = Math.sqrt(dx*dx + dy*dy)*(Math.random()*(vars[1]-vars[0])+vars[0])
+            return Math.round(w) + Math.round(Math.random()*vars[2]*4)/4;
+        }
+        gLocation = function(vars) {
+            var t = Math.random()*2*Math.PI;
+            var r = Math.pow(Math.random(),Math.exp(-1))*vars[0];
+            var p = [Math.round(r*Math.cos(t))/vars[1], Math.round(r*Math.sin(t))/vars[1]]
+            return p;
+        }
+        var G = randomgraph("graph", 0, 98, gLocation,[121,1/4],fDistance,[0.99,1.01,2], Math.exp(-1))
+        //r = round("graph", r, 400);
+        G.gui();
+        a = new Dijkstra(G);
+        a.initialize([0,1])
+
+        autoDijkstra = function(C, H, p, vars) {
+            G = randomgraph("graph", 0, H, gLocation,[121,1/4],fDistance,[0.99,1.01,2], p)
+            var hide = 0;
+            if (vars["hide"])
+                hide = vars["hide"];
+            if (vars["round"])
+                G = round("graph", G, 400);
+            a = new Dijkstra(G);
+            a.initialize(C);
+            m = Object.keys(G.edges).length;
+            return a.solve(hide)/m;
+        }
+    </script>
+</body>
+</html>
