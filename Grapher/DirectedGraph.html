@@ -812,20 +812,20 @@
             var w = Math.sqrt(dx*dx + dy*dy)*(Math.random()*(vars[1]-vars[0])+vars[0])
             return Math.round(w) + Math.round(Math.random()*vars[2]*4)/4;
         }
-        gLocation = function(vars) {
+        gLocation = function(vars=[500,2]) {
             var t = Math.random()*2*Math.PI;
-            var r = Math.pow(Math.random(),Math.exp(-1))*vars[0];
-            var p = [Math.round(r*Math.cos(t))/vars[1], Math.round(r*Math.sin(t))/vars[1]]
+            var r = Math.pow(Math.random(),1/vars[1])*vars[0];
+            var p = [Math.round(r*Math.cos(t)), Math.round(r*Math.sin(t))]
             return p;
         }
-        var G = randomgraph("graph", 0, 98, gLocation,[121,1/4],fDistance,[0.99,1.01,2], Math.exp(-1))
+        var G = randomgraph("graph", 0, 98, gLocation,[500,2],fDistance,[0.99,1.01,2], Math.exp(-1))
         //r = round("graph", r, 400);
         G.gui();
         a = new Dijkstra(G);
         a.initialize([0,1])
 
         autoDijkstra = function(C, H, p, vars) {
-            G = randomgraph("graph", 0, H, gLocation,[121,1/4],fDistance,[0.99,1.01,2], p)
+            G = randomgraph("graph", 0, H, gLocation,[500,2],fDistance,[0.99,1.01,2], p)
             var hide = 0;
             if (vars["hide"])
                 hide = vars["hide"];
