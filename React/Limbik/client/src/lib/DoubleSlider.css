@@ -1,0 +1,102 @@
+body {
+    background: black;
+  }
+
+.container {
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: left;
+  }
+  
+  .slider {
+    position: relative;
+    width: 200px;
+  }
+  
+  .slidertrack,
+  .sliderrange,
+  .sliderleft-value,
+  .sliderright-value {
+    position: absolute;
+  }
+  
+  .slidertrack,
+  .sliderrange {
+    border-radius: 3px;
+    height: 5px;
+  }
+  
+  .slidertrack {
+    background-color: #7f7f7f;
+    width: 100%;
+    z-index: 1;
+  }
+  
+  .sliderrange {
+    background-color: #ff7f00;
+    z-index: 2;
+  }
+  
+  .sliderleft-value,
+  .sliderright-value {
+    color: #cfcfcf;
+    font-size: 12px;
+    margin-top: 20px;
+  }
+  
+  .sliderleft-value {
+    left: 6px;
+  }
+  
+  .sliderright-value {
+    right: -4px;
+  }
+  
+  .thumb,
+  .thumb::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .thumb {
+    pointer-events: none;
+    position: absolute;
+    height: 0;
+    width: 200px;
+    outline: none;
+  }
+  
+  .thumb--zindex-3 {
+    z-index: 3;
+  }
+  
+  .thumb--zindex-4 {
+    z-index: 4;
+  }
+  
+  .thumb--zindex-5 {
+    z-index: 5;
+  }
+  
+  /* For Chrome browsers */
+  .thumb::-webkit-slider-thumb {
+    background-color: transparent;
+    cursor: pointer;
+    height: 18px;
+    width: 18px;
+    pointer-events: all;
+    position: relative;
+  }
+  
+  /* For Firefox browsers */
+  .thumb::-moz-range-thumb {
+    background-color: transparent;
+    border: 2px solid white;
+    cursor: pointer;
+    height: 18px;
+    width: 18px;
+    pointer-events: all;
+    position: relative;
+  }
+  

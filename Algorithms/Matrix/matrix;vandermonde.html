@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html lang="en-us">
+<head>
+	<meta charset="utf-8" />
+	<title>Matrix Test</title>
+	<style>
+		:root {
+			--narrow: 16px;
+			--medium: 32px;
+			--wide: 64px;
+			--rainbow: 
+				repeating-linear-gradient( 
+				1deg, rgba(255,0,0,0.2), 
+				rgba(0,255,0,0.2) 32px, 
+				rgba(0,0,255,0.2) 64px, 
+				rgba(255,255,0,0.2) 96px ),
+				repeating-linear-gradient( 
+				1rad, rgba(255,0,0,0.2), 
+				rgba(0,255,0,0.2) 32px, 
+				rgba(0,0,255,0.2) 64px, 
+				rgba(255,255,0,0.2) 96px );
+			white-space: nowrap;
+			table-layout: fixed;
+		}
+
+		h1 {
+			font-family: "Old English Text MT","Century Gothic";
+			font-size: 24pt;
+			font-style: normal;
+			font-weight: 100;
+			border-bottom: 2px solid pink;
+		}
+
+		h2 {
+			font-family: "Old English Text MT","Century Gothic";
+			font-size: 16pt;
+			font-style: normal;
+			font-weight: 100;
+		}
+
+		equation {
+			background-image: var(--rainbow);
+			table-layout: fixed;
+		}
+
+        .MatrixFormat {
+            font-family: "Century Gothic", "Courier New";
+            font-size: 10pt;
+            table-layout: fixed;
+        }
+
+        .matrix {
+            font-size: 10pt;
+            border: 1px solid black;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .entry {
+            height: 16px;
+            width: var(--medium);
+            border: 1px dotted gray;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+		
+		/* Stype for specific cases */
+		.entry[case=FRACTIONAL\'] {
+			font-family: "Calibri Light", "Arial", "Consolas";
+			font-size: 15pt;
+		}
+
+		abbr[class=exact] {
+			text-decoration: none;
+		}
+	</style>
+</head>
+<body>
+	<script type="text/javascript" src="../Matrix/matrix.js"></script> <!-- Add Matrix test -->
+	<script type="text/javascript" src="../Expressions/rational.js"></script>
+	<script type="text/javascript" src="../Datastructures/sampling.js"></script>
+
+	<!-- Specific demo scripts for front end -->
+	<script type="text/javascript">
+		/**Generate a Matrix represented as a Table
+		 * @param M
+		 * @param id
+		 * @param css
+		 */
+		function generateMatrixTable(M, id, css, attributes = {}) {
+			source = [];
+			if (!(M instanceof Matrix)) {
+                document.getElementById(id).innerHTML = M;
+                return M;
+            }
+
+			/**
+			 * @param i
+			 * @param j
+			 */
+			function _pushEntry(i, j) {
+				var entrysource = [];
+				var entrystring = null;
+				var entrycase = _case(M.entry[i][j]);
+
+				switch (attributes["approx"]) {
+					case "FRACTION":
+						if (entrycase == "FRACTIONAL") // Case must be modified for CCS to take effect
+							entrycase = "FRACTIONAL'";
+						entrystring = fractionHTML(M.entry[i][j]);
+						break;
+					default:
+						entrystring = approxString(M.entry[i][j], 3);
+						break;
+				}
+
+				if (M.entry[i][j] == 0n) {
+					switch (attributes["zero"]) {
+						case undefined:
+							entrystring = entrystring;
+							break;
+						case "-":
+							entrystring = "——";
+							break;
+						case "":
+							entrystring = "";
+							break;
+                    }
+                }
+                entrysource.push("\t\t<TD class=" + css + " id=" + _entryId(id, i, j) + " case=" + entrycase + ">");
+                entrysource.push(entrystring);
+                entrysource.push("</TD>\n");
+                return entrysource.join("");
+			}
+
+			source.push("<table class=matrix>");
+			try {
+				for (var i = 0; i < M.rows; i++) {
+					source.push("\t<TR>\n");
+					for (var j = 0; j < M.cols; j++) {
+						source.push(_pushEntry(i, j));
+					}
+					source.push("\t</TR>\n");
+				}
+			} catch (e) {
+				console.log(e);
+				source.push("DNE");
+			}
+			source.push("</table>");
+			source = source.join("");
+			document.getElementById(id).innerHTML = source;
+			return M;
+		}
+
+		/**
+		 * 
+		 * @param id
+		 * @param i
+		 * @param j
+		 */
+        function _entryId(id, i, j) {
+            return id + "," + i + "," + j;
+		}
+
+		function _case(q) {
+			if (!_isExactForm(q))
+				return "APPROXIMATE";
+			if (q instanceof Rational) {
+				if (q.integral())
+					return "INTEGRAL";
+				else
+					return "FRACTIONAL";
+			}
+			else if (typeof (q) === "bigint")
+				return "BIGINT";
+			return "OMG";
+        }
+
+		/**
+		 * @param L The left matrix.
+		 * @param R	The right matrix.
+		 * @param idL The id representing the left matrix.
+		 * @param idR The id representing the right matrix.
+		 * @param op The operator symbol used.
+		 * @param f The function that will be used. If it is an instance function,
+		 * create a new static function which wraps the instance function.
+		 */
+		function matrixEquation(L, R, idL, idR, op, f) {
+			var T = Date.now();
+			var source = [];
+			const id = idL + op + idR;
+			source.push("<table class=\"MatrixFormat\" style=\"border-collapse: collapse\">");
+			source.push("	<tr>");
+			source.push("		<td><matrix id=\"" + idL + "\" />…</td>");
+			source.push("		<td>" + op + "</td>");
+			source.push("		<td><matrix id=\"" + idR + "\" />…</td>");
+			source.push("		<td>=</td>");
+			source.push("		<td><matrix id=\"" + id + "\" />…</td>");
+			source.push("	</tr>");
+			source.push("</table>");
+
+			// Determine if solution is defined.
+			var sol;
+			try {
+				sol = f(L, R);
+			} catch (e) {
+				console.log(e.message);
+			}
+
+			// Write down source.
+			source = source.join("");
+			document.write("<equation >OMG" + source + "\n</equation><br />");
+			generateMatrixTable(L, idL, "entry");
+			generateMatrixTable(R, idR, "entry");
+			if (sol)
+				generateMatrixTable(sol, id, "entry");
+			else
+				document.getElementById(id).innerHTML = "DNE";
+
+			T = Date.now() - T;
+			console.log(L.cols + "×" + R.cols + " finished in " + T + " ms.");
+			return [source, sol];
+		}
+
+		/**
+		 *
+		 * @param L
+		 * @param R
+		 * @param idL
+		 * @param idR
+		 */
+		function additionEquation(L, R, idL, idR) {
+			return matrixEquation(L, R, idL, idR, "+", function () { return L.add(R) })
+		}
+
+		/**
+		 *
+		 * @param L
+		 * @param R
+		 * @param idL
+		 * @param idR
+		 */
+		function multiplicationEquation(L, R, idL, idR) {
+			return matrixEquation(L, R, idL, idR, "", function () { return L.multiply(R) })
+		}
+
+		function matrixGaussian(M, idM, source=true) {
+			var T = Date.now();
+			var source = [];
+			const idECHELON = [idM + ".echelon", idM + ".reduced"];
+			source.push("<table class=\"MatrixFormat\" style=\"border-collapse: collapse\">");
+			source.push("	<tr>");
+			source.push("		<td><matrix id=\"" + idM + "\" />…</td>");
+			source.push("		<td>→</td>");
+			source.push("		<td><matrix id=\"" + idECHELON[0] + "\" />…</td>");
+			source.push("		<td>⇉</td>");
+			source.push("		<td><matrix id=\"" + idECHELON[1] + "\" />…</td>");
+			source.push("	</tr>");
+			source.push("</table>");
+
+			// Determine if solution is defined.
+			var echelon;
+			var reduced;
+			try {
+				echelon = echelonform(M);
+				reduced = reducedform(M, leading=true);
+                reduced.reduce_fractions()
+			} catch (e) {
+				console.log(e.message);
+			}
+
+			// Write down source.
+			if (source) {
+                source = source.join("");
+                document.write("<equation >" + source + "\n</equation><br />");
+                generateMatrixTable(M, idM, "entry");
+                generateMatrixTable(echelon, idECHELON[0], "entry");
+                generateMatrixTable(reduced, idECHELON[1], "entry", { "approx": "FRACTION", "zero": "" });
+            }
+
+			T = Date.now() - T;
+			console.log(M.rows + "×" + M.rows + " finished in " + T + " ms.");
+			return [source, M, echelon, reduced];
+		}
+
+        function matrixInverse(M, idM, source = true) {
+            var T = Date.now();
+            var source = [];
+            const idINVERSE = [idM + ".-1", idM + ".I"];
+            source.push("<table class=\"MatrixFormat\" style=\"border-collapse: collapse\">");
+            source.push("	<tr>");
+            source.push("		<td><matrix id=\"" + idM + "\" />…</td>");
+            source.push("		<td> </td>");
+            source.push("		<td><matrix id=\"" + idINVERSE[0] + "\" />…</td>");
+            source.push("		<td>=</td>");
+            source.push("		<td><matrix id=\"" + idINVERSE[1] + "\" />…</td>");
+            source.push("	</tr>");
+            source.push("</table>");
+
+            // Determine if solution is defined.
+            var Minverse;
+            var identity;
+            try {
+                Minverse = inverse(M);
+				identity = M.multiply(Minverse);
+			} catch (e) {
+				Minverse = NaN;
+                console.log(e.message);
+            }
+
+            // Write down source.
+            if (source) {
+                source = source.join("");
+                document.write("<equation >" + source + "\n</equation><br />");
+				generateMatrixTable(M, idM, "entry");
+				if (Number.isNaN(Minverse)) {
+					document.getElementById(idM).innerHTML += "det(<b>" + idM + "</b>) = " + M.getDet();
+					generateMatrixTable("DNE", idINVERSE[0], "entry");
+					generateMatrixTable("I", idINVERSE[1], "entry");
+				}
+				else {
+                    document.getElementById(idM).innerHTML += "det(<b>" + idM + "</b>) = " + M.getDet();
+					generateMatrixTable(Minverse, idINVERSE[0], "entry");
+					document.getElementById(idINVERSE[0]).innerHTML +=
+						"det(<b>" + idM + "</b><sup>-1</sup>) = " + Minverse.getDet();
+                    generateMatrixTable(identity, idINVERSE[1], "entry");
+                }
+            }
+
+            T = Date.now() - T;
+            console.log(M.rows + "×" + M.rows + " finished in " + T + " ms.");
+            return [source, M, Minverse, identity];
+        }
+
+		const RANGE = [-15, 15]
+		/**Generate a random matrix.
+		 * @param x
+		 * @param m
+		 * @param n
+		 * @param j
+		 * @param range
+		 * @param leading
+		 * @param exactness
+		 */
+		function randommatrix(m, n, j, range = RANGE, leading = false, exactness = 1) {
+			// Random matrix
+			var A = matrix(m, n)
+			j = shuffle(j);
+			for (var k = 0; k < A.rows; k++) {
+				if (j[k] === undefined)
+					j[k] = 0;
+				for (c = j[k]; c < A.entry[0].length; c++) {
+					var exact = Math.random() < exactness;
+					var total = range[1] - range[0] + 1;
+					if (exact)
+						A.entry[k][c] = BigInt(Math.trunc(Math.random() * total) + range[0]);
+					else
+						A.entry[k][c] = Number(Math.trunc(Math.random() * total) + range[0]);
+				}
+			}
+			return A;
+		}
+
+		/**Generate a Vandermonde matrix.
+		 */
+        function vandermonde(n, x, y, exactness = 1) {
+			// Vandermonde matrix
+			var A = matrix(n, n+1)
+			for (var i = 0; i < n; i++) {
+                A.entry[i][n] = y[i];
+                var k = 1n
+                for (var j = n-1; j >= 0; j--) {
+                    A.entry[i][j] = k
+                    k = multiply(k,x[i])
+                }
+			}
+			return A;
+		}        
+	</script>
+
+	<!-- MATRIX GAUSIAN ELIMINATION -->
+	<h1>Vandermonde Matrices</h1>
+	<script type="text/javascript">
+		G = [];
+        y = [76212168n,92228496n,106021537n,123202624n,132164569n,151325798n,179323175n,203302031n,226542199n];
+        G[0] = vandermonde(9, [1900n,1910n,1920n,1930n,1940n,1950n,1960n,1970n,1980n], y);
+        G[1] = vandermonde(9, [0n,10n,20n,30n,40n,50n,60n,70n,80n], y);
+        G[2] = vandermonde(9, [-40n,-30n,-20n,-10n,0n,10n,20n,30n,40n], y);
+        x = [0,0,0,0,0,0,0,0,0]
+        for (var k = 0; k <= 8; k++)
+            x[k] = Q(k-4,4)
+        G[3] = vandermonde(9, x, y);
+        for (var k = 0; k <= 3; k++) {
+			matrixGaussian(G[k], "G." + k);
+		}
+	</script>
+</body>
+</html>

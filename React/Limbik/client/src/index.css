@@ -1,0 +1,83 @@
+body {
+  font: 16px "Unifont", monospace;
+  padding: 0.25in;
+  color: white;
+}
+
+H1 {
+  margin-top: 0px;
+  margin-bottom: 6px;
+  text-align: center;
+  font-family: 'Noto Sans', 'sans serif';
+}
+
+strong {
+  font-style: italic;
+  text-align: center;
+  align-items: center;
+}
+
+H2 {
+  margin: 0px;
+}
+
+a {
+  color: #CFCFFF;
+  text-decoration: #CFCFFF underline;
+}
+
+th {
+  background: #222;
+  border-bottom: 1px solid white;
+}
+
+tr:nth-child(odd) {
+  background: #101010;
+}
+
+tr:nth-child(even) {
+  background: #080808;
+}
+
+.dashboard {
+  background: #222;
+}
+
+.imagepost {
+  background: #000;
+  width: 800px;
+}
+
+.imagepostTitle {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.submit {
+  background: transparent;
+  border: 2px solid green;
+  margin: 2px;
+  color: lime;
+  font: 16px 'Unifont', monospace;
+}
+
+.dropdown {
+  background: transparent;
+  border: 2px solid yellow;
+  margin: 2px;
+  color: yellow;
+  font: 16px 'Unifont', monospace;
+}
+
+.checkbox {
+  width: 2in;
+  text-align: left;
+  background: transparent;
+  margin: 2px;
+  color: yellow;
+  font: 16px 'Unifont', monospace;
+}
+
+.twoinch {
+  width: 4in;
+}

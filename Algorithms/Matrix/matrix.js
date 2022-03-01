@@ -26,7 +26,7 @@ function Matrix(m, n) {
 	/* Arithmetic Functions */
 	this.add = function (term) {
 		if (!(term instanceof Matrix))
-			throw new Error("Term must be a " + this.rows + " × " + this.cols + "matrix!")
+			throw new Error("Term must be a " + this.rows + " ï¿½ " + this.cols + "matrix!")
 		if (term.rows != this.rows || term.cols != this.cols)
 			throw new Error("Incompatible matrices! " + [this.rows, term.rows, this.cols, term.cols])
 		var sum = matrix(this.rows, this.cols)
@@ -77,6 +77,15 @@ function Matrix(m, n) {
 			}
 		}
 		return transpose;
+	}
+
+	this.reduce_fractions = function() {
+		for (var i = 0; i < m; i++) {
+			for (var j = 0; j < n; j++) {
+				this.entry[i][j].reduce()
+			}
+		}
+		return this
 	}
 
 	/* CLOSURES */

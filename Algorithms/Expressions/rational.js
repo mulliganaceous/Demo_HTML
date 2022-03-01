@@ -232,14 +232,14 @@ function approxString(q, precision = 16) {
 		}
 		else if (q.integral()) {
 			approx = (approx).toFixed(0);
-			return "<abbr class=\"exact\" title=\"" + q.toString() + " = " + q.approx() + "\">" + approx + "</abbr>";
+			return "<abbr class=\"exact\" title=\"" + q.toString() + " = " + q.approx() + "\">" + q.approx() + "</abbr>";
 		}
     }
 	else
 		return "~" + approx;
 }
 
-function fractionHTML(q, char = "⁄", precision=24) {
+function fractionHTML(q, char = "⁄", precision=20) {
 	var approx = Number(q).toFixed(precision);
 	if (_isExactForm(q)) {
 		if (!(q instanceof Rational))

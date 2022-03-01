@@ -1,0 +1,518 @@
+# Server response upon get
+
+## Request
+
+	GET / HTTP/1.1
+	Host: localhost:3000
+	User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:97.0) Gecko/20100101 Firefox/97.0
+	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+	Accept-Language: en-US,en;q=0.5
+	Accept-Encoding: gzip, deflate
+	Connection: keep-alive
+	Upgrade-Insecure-Requests: 1
+	Sec-Fetch-Dest: document
+	Sec-Fetch-Mode: navigate
+	Sec-Fetch-Site: none
+	Sec-Fetch-User: ?1
+	Cache-Control: max-age=0
+
+## Response
+
+Output for 	`console.log(res)`:
+
+	Server running at http://127.0.0.1:3000
+	<ref *2> ServerResponse {
+	  _events: [Object: null prototype] { finish: [Function: bound resOnFinish] },
+	  _eventsCount: 1,
+	  _maxListeners: undefined,
+	  outputData: [],
+	  outputSize: 0,
+	  writable: true,
+	  destroyed: false,
+	  _last: false,
+	  chunkedEncoding: false,
+	  shouldKeepAlive: true,
+	  maxRequestsOnConnectionReached: false,
+	  _defaultKeepAlive: true,
+	  useChunkedEncodingByDefault: true,
+	  sendDate: true,
+	  _removedConnection: false,
+	  _removedContLen: false,
+	  _removedTE: false,
+	  _contentLength: 11,
+	  _hasBody: true,
+	  _trailer: '',
+	  finished: true,
+	  _headerSent: true,
+	  _closed: false,
+	  socket: <ref *1> Socket {
+		connecting: false,
+		_hadError: false,
+		_parent: null,
+		_host: null,
+		_readableState: ReadableState {
+		  objectMode: false,
+		  highWaterMark: 16384,
+		  buffer: BufferList { head: null, tail: null, length: 0 },
+		  length: 0,
+		  pipes: [],
+		  flowing: true,
+		  ended: false,
+		  endEmitted: false,
+		  reading: true,
+		  constructed: true,
+		  sync: false,
+		  needReadable: true,
+		  emittedReadable: false,
+		  readableListening: false,
+		  resumeScheduled: false,
+		  errorEmitted: false,
+		  emitClose: false,
+		  autoDestroy: true,
+		  destroyed: false,
+		  errored: null,
+		  closed: false,
+		  closeEmitted: false,
+		  defaultEncoding: 'utf8',
+		  awaitDrainWriters: null,
+		  multiAwaitDrain: false,
+		  readingMore: false,
+		  dataEmitted: false,
+		  decoder: null,
+		  encoding: null,
+		  [Symbol(kPaused)]: false
+		},
+		_events: [Object: null prototype] {
+		  end: [Array],
+		  timeout: [Function: socketOnTimeout],
+		  data: [Function: bound socketOnData],
+		  error: [Function: socketOnError],
+		  close: [Array],
+		  drain: [Function: bound socketOnDrain],
+		  resume: [Function: onSocketResume],
+		  pause: [Function: onSocketPause]
+		},
+		_eventsCount: 8,
+		_maxListeners: undefined,
+		_writableState: WritableState {
+		  objectMode: false,
+		  highWaterMark: 16384,
+		  finalCalled: false,
+		  needDrain: false,
+		  ending: false,
+		  ended: false,
+		  finished: false,
+		  destroyed: false,
+		  decodeStrings: false,
+		  defaultEncoding: 'utf8',
+		  length: 0,
+		  writing: false,
+		  corked: 0,
+		  sync: false,
+		  bufferProcessing: false,
+		  onwrite: [Function: bound onwrite],
+		  writecb: null,
+		  writelen: 0,
+		  afterWriteTickInfo: [Object],
+		  buffered: [],
+		  bufferedIndex: 0,
+		  allBuffers: true,
+		  allNoop: true,
+		  pendingcb: 1,
+		  constructed: true,
+		  prefinished: false,
+		  errorEmitted: false,
+		  emitClose: false,
+		  autoDestroy: true,
+		  errored: null,
+		  closed: false,
+		  closeEmitted: false,
+		  [Symbol(kOnFinished)]: []
+		},
+		allowHalfOpen: true,
+		_sockname: null,
+		_pendingData: null,
+		_pendingEncoding: '',
+		server: Server {
+		  maxHeaderSize: undefined,
+		  insecureHTTPParser: undefined,
+		  _events: [Object: null prototype],
+		  _eventsCount: 2,
+		  _maxListeners: undefined,
+		  _connections: 1,
+		  _handle: [TCP],
+		  _usingWorkers: false,
+		  _workers: [],
+		  _unref: false,
+		  allowHalfOpen: true,
+		  pauseOnConnect: false,
+		  httpAllowHalfOpen: false,
+		  timeout: 0,
+		  keepAliveTimeout: 5000,
+		  maxHeadersCount: null,
+		  maxRequestsPerSocket: 0,
+		  headersTimeout: 60000,
+		  requestTimeout: 0,
+		  _connectionKey: '4:127.0.0.1:3000',
+		  [Symbol(IncomingMessage)]: [Function: IncomingMessage],
+		  [Symbol(ServerResponse)]: [Function: ServerResponse],
+		  [Symbol(kCapture)]: false,
+		  [Symbol(async_id_symbol)]: 4
+		},
+		_server: Server {
+		  maxHeaderSize: undefined,
+		  insecureHTTPParser: undefined,
+		  _events: [Object: null prototype],
+		  _eventsCount: 2,
+		  _maxListeners: undefined,
+		  _connections: 1,
+		  _handle: [TCP],
+		  _usingWorkers: false,
+		  _workers: [],
+		  _unref: false,
+		  allowHalfOpen: true,
+		  pauseOnConnect: false,
+		  httpAllowHalfOpen: false,
+		  timeout: 0,
+		  keepAliveTimeout: 5000,
+		  maxHeadersCount: null,
+		  maxRequestsPerSocket: 0,
+		  headersTimeout: 60000,
+		  requestTimeout: 0,
+		  _connectionKey: '4:127.0.0.1:3000',
+		  [Symbol(IncomingMessage)]: [Function: IncomingMessage],
+		  [Symbol(ServerResponse)]: [Function: ServerResponse],
+		  [Symbol(kCapture)]: false,
+		  [Symbol(async_id_symbol)]: 4
+		},
+		parser: HTTPParser {
+		  '0': [Function: bound setRequestTimeout],
+		  '1': [Function: parserOnHeaders],
+		  '2': [Function: parserOnHeadersComplete],
+		  '3': [Function: parserOnBody],
+		  '4': [Function: parserOnMessageComplete],
+		  '5': [Function: bound onParserExecute],
+		  '6': [Function: bound onParserTimeout],
+		  _headers: [],
+		  _url: '',
+		  socket: [Circular *1],
+		  incoming: [IncomingMessage],
+		  outgoing: null,
+		  maxHeaderPairs: 2000,
+		  _consumed: true,
+		  onIncoming: [Function: bound parserOnIncoming],
+		  [Symbol(resource_symbol)]: [HTTPServerAsyncResource]
+		},
+		on: [Function: socketListenerWrap],
+		addListener: [Function: socketListenerWrap],
+		prependListener: [Function: socketListenerWrap],
+		setEncoding: [Function: socketSetEncoding],
+		_paused: false,
+		_httpMessage: [Circular *2],
+		[Symbol(async_id_symbol)]: 9,
+		[Symbol(kHandle)]: TCP {
+		  reading: true,
+		  onconnection: null,
+		  _consumed: true,
+		  [Symbol(owner_symbol)]: [Circular *1]
+		},
+		[Symbol(kSetNoDelay)]: false,
+		[Symbol(lastWriteQueueSize)]: 0,
+		[Symbol(timeout)]: null,
+		[Symbol(kBuffer)]: null,
+		[Symbol(kBufferCb)]: null,
+		[Symbol(kBufferGen)]: null,
+		[Symbol(kCapture)]: false,
+		[Symbol(kBytesRead)]: 0,
+		[Symbol(kBytesWritten)]: 0,
+		[Symbol(RequestTimeout)]: undefined
+	  },
+	  _header: 'HTTP/1.1 200 OK\r\n' +
+		'Content-Type: text/plain\r\n' +
+		'Date: Mon, 28 Feb 2022 16:47:41 GMT\r\n' +
+		'Connection: keep-alive\r\n' +
+		'Keep-Alive: timeout=5\r\n' +
+		'Content-Length: 11\r\n' +
+		'\r\n',
+	  _keepAliveTimeout: 5000,
+	  _onPendingData: [Function: bound updateOutgoingData],
+	  req: IncomingMessage {
+		_readableState: ReadableState {
+		  objectMode: false,
+		  highWaterMark: 16384,
+		  buffer: BufferList { head: null, tail: null, length: 0 },
+		  length: 0,
+		  pipes: [],
+		  flowing: null,
+		  ended: false,
+		  endEmitted: false,
+		  reading: false,
+		  constructed: true,
+		  sync: true,
+		  needReadable: false,
+		  emittedReadable: false,
+		  readableListening: false,
+		  resumeScheduled: false,
+		  errorEmitted: false,
+		  emitClose: true,
+		  autoDestroy: true,
+		  destroyed: false,
+		  errored: null,
+		  closed: false,
+		  closeEmitted: false,
+		  defaultEncoding: 'utf8',
+		  awaitDrainWriters: null,
+		  multiAwaitDrain: false,
+		  readingMore: true,
+		  dataEmitted: false,
+		  decoder: null,
+		  encoding: null,
+		  [Symbol(kPaused)]: null
+		},
+		_events: [Object: null prototype] { end: [Function: clearRequestTimeout] },
+		_eventsCount: 1,
+		_maxListeners: undefined,
+		socket: <ref *1> Socket {
+		  connecting: false,
+		  _hadError: false,
+		  _parent: null,
+		  _host: null,
+		  _readableState: [ReadableState],
+		  _events: [Object: null prototype],
+		  _eventsCount: 8,
+		  _maxListeners: undefined,
+		  _writableState: [WritableState],
+		  allowHalfOpen: true,
+		  _sockname: null,
+		  _pendingData: null,
+		  _pendingEncoding: '',
+		  server: [Server],
+		  _server: [Server],
+		  parser: [HTTPParser],
+		  on: [Function: socketListenerWrap],
+		  addListener: [Function: socketListenerWrap],
+		  prependListener: [Function: socketListenerWrap],
+		  setEncoding: [Function: socketSetEncoding],
+		  _paused: false,
+		  _httpMessage: [Circular *2],
+		  [Symbol(async_id_symbol)]: 9,
+		  [Symbol(kHandle)]: [TCP],
+		  [Symbol(kSetNoDelay)]: false,
+		  [Symbol(lastWriteQueueSize)]: 0,
+		  [Symbol(timeout)]: null,
+		  [Symbol(kBuffer)]: null,
+		  [Symbol(kBufferCb)]: null,
+		  [Symbol(kBufferGen)]: null,
+		  [Symbol(kCapture)]: false,
+		  [Symbol(kBytesRead)]: 0,
+		  [Symbol(kBytesWritten)]: 0,
+		  [Symbol(RequestTimeout)]: undefined
+		},
+		httpVersionMajor: 1,
+		httpVersionMinor: 1,
+		httpVersion: '1.1',
+		complete: false,
+		rawHeaders: [
+		  'Host',
+		  'localhost:3000',
+		  'User-Agent',
+		  'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:97.0) Gecko/20100101 Firefox/97.0',
+		  'Accept',
+		  'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+		  'Accept-Language',
+		  'en-US,en;q=0.5',
+		  'Accept-Encoding',
+		  'gzip, deflate',
+		  'Connection',
+		  'keep-alive',
+		  'Upgrade-Insecure-Requests',
+		  '1',
+		  'Sec-Fetch-Dest',
+		  'document',
+		  'Sec-Fetch-Mode',
+		  'navigate',
+		  'Sec-Fetch-Site',
+		  'none',
+		  'Sec-Fetch-User',
+		  '?1',
+		  'Cache-Control',
+		  'max-age=0'
+		],
+		rawTrailers: [],
+		aborted: false,
+		upgrade: false,
+		url: '/',
+		method: 'GET',
+		statusCode: null,
+		statusMessage: null,
+		client: <ref *1> Socket {
+		  connecting: false,
+		  _hadError: false,
+		  _parent: null,
+		  _host: null,
+		  _readableState: [ReadableState],
+		  _events: [Object: null prototype],
+		  _eventsCount: 8,
+		  _maxListeners: undefined,
+		  _writableState: [WritableState],
+		  allowHalfOpen: true,
+		  _sockname: null,
+		  _pendingData: null,
+		  _pendingEncoding: '',
+		  server: [Server],
+		  _server: [Server],
+		  parser: [HTTPParser],
+		  on: [Function: socketListenerWrap],
+		  addListener: [Function: socketListenerWrap],
+		  prependListener: [Function: socketListenerWrap],
+		  setEncoding: [Function: socketSetEncoding],
+		  _paused: false,
+		  _httpMessage: [Circular *2],
+		  [Symbol(async_id_symbol)]: 9,
+		  [Symbol(kHandle)]: [TCP],
+		  [Symbol(kSetNoDelay)]: false,
+		  [Symbol(lastWriteQueueSize)]: 0,
+		  [Symbol(timeout)]: null,
+		  [Symbol(kBuffer)]: null,
+		  [Symbol(kBufferCb)]: null,
+		  [Symbol(kBufferGen)]: null,
+		  [Symbol(kCapture)]: false,
+		  [Symbol(kBytesRead)]: 0,
+		  [Symbol(kBytesWritten)]: 0,
+		  [Symbol(RequestTimeout)]: undefined
+		},
+		_consuming: false,
+		_dumped: false,
+		[Symbol(kCapture)]: false,
+		[Symbol(kHeaders)]: {
+		  host: 'localhost:3000',
+		  'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:97.0) Gecko/20100101 Firefox/97.0',
+		  accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+		  'accept-language': 'en-US,en;q=0.5',
+		  'accept-encoding': 'gzip, deflate',
+		  connection: 'keep-alive',
+		  'upgrade-insecure-requests': '1',
+		  'sec-fetch-dest': 'document',
+		  'sec-fetch-mode': 'navigate',
+		  'sec-fetch-site': 'none',
+		  'sec-fetch-user': '?1',
+		  'cache-control': 'max-age=0'
+		},
+		[Symbol(kHeadersCount)]: 24,
+		[Symbol(kTrailers)]: null,
+		[Symbol(kTrailersCount)]: 0,
+		[Symbol(RequestTimeout)]: undefined
+	  },
+	  _sent100: false,
+	  _expect_continue: false,
+	  statusCode: 200,
+	  statusMessage: 'OK',
+	  [Symbol(kCapture)]: false,
+	  [Symbol(kNeedDrain)]: false,
+	  [Symbol(corked)]: 0,
+	  [Symbol(kOutHeaders)]: [Object: null prototype] {
+		'content-type': [ 'Content-Type', 'text/plain' ]
+	  }
+	}
+
+# Requests
+
+## GET Request
+
+	const https = require('https')
+	const options = {
+	  hostname: 'example.com',
+	  port: 443,
+	  path: '/todos',
+	  method: 'GET'
+	}
+
+	const req = https.request(options, res => {
+	  console.log(`statusCode: ${res.statusCode}`)
+
+	  res.on('data', d => {
+		process.stdout.write(d)
+	  })
+	})
+
+	req.on('error', error => {
+	  console.error(error)
+	})
+
+	req.end()
+	
+## POST Request
+
+	const https = require('https')
+
+	const data = JSON.stringify({
+	  todo: 'Buy the milk'
+	})
+
+	const options = {
+	  hostname: 'whatever.com',
+	  port: 443,
+	  path: '/todos',
+	  method: 'POST',
+	  headers: {
+		'Content-Type': 'application/json',
+		'Content-Length': data.length
+	  }
+	}
+
+	const req = https.request(options, res => {
+	  console.log(`statusCode: ${res.statusCode}`)
+
+	  res.on('data', d => {
+		process.stdout.write(d)
+	  })
+	})
+
+	req.on('error', error => {
+	  console.error(error)
+	})
+
+	req.write(data)
+	req.end()
+	
+# CORS Blocking
+
+## CORS Middleware
+
+# Drafts
+
+## Vanilla Node Server
+
+	/**Create a server with a request handler
+	 */
+	const server = http.createServer();
+
+	server.on('request', (req, res) => {
+		if (req.method === 'GET' && req.url === '/') {
+		    // Set variables related to request and body, and handle request result cases
+		    const { headers, method, url } = req;
+		    let body = [];
+		    req.on('error', (err) => {
+		        console.error(err);
+		    }).on('data', (chunk) => {
+		        body.push(chunk);
+		    }).on('end', () => {
+		        body = Buffer.concat(body).toString();
+
+		        // ...
+		    });
+		}
+		else if (req.method === 'GET' && req.url === '/omg') {
+		    res.statusCode = 384; // OMG
+		    res.end();
+		}
+		else {
+		    res.statusCode = 418; // Teapot
+		    res.end();
+		}
+	});
+
+	server.listen(port, hostname, () => {
+		console.log(`Server running at http://${hostname}:${port}`);
+	})
+
