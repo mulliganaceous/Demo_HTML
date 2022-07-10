@@ -1,0 +1,19 @@
+body {
+  font: 16px "Unifont", monospace;
+  margin: 0px;
+  color: white;
+}
+
+.dashboard {
+  background: #222;
+}
+
+.imagepost {
+  background: #000;
+  width: 800px;
+}
+
+.imagepostTitle {
+  font-weight: bold;
+  text-decoration: underline;
+}
