@@ -1,0 +1,175 @@
+Python 3.10.4 (main, Apr  2 2022, 09:04:19) [GCC 11.2.0] on linux
+Type "help", "copyright", "credits" or "license()" for more information.
+
+= RESTART: /home/mulliganaceous/Documents/Heathencastle/Hackathon/HTML_ReportCardGenerator/htmlgenerator.py
+<html><head><meta charset="UTF-8" /><title /><link rel="stylesheet" href="../Mulliganaceous2.css" /></head></html>
+{'lastname': 'Betty', 'firstname': 'Alpha', 'username': '', 'order': '1.1'}
+	{'type': 'Photograph', 'time': '', 'grade': '-'}
+	Incomplete submission, missing Page 6.
+	{'page': '1', 'name': 'Q1a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '1', 'name': 'Q1b', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '1', 'name': 'Q2', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '2', 'name': 'Q3', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '2', 'name': 'Q4', 'grade': '0', 'outof': '6'} ( 0%) Blank
+	{'page': '2', 'name': 'Q5a', 'grade': '1', 'outof': '4'} (25%) This is a perimeter problem, not an area problem.
+	{'page': '2', 'name': 'Q5b', 'grade': '1', 'outof': '2'} (50%) The length is NG
+	{'page': '3', 'name': 'Q6', 'grade': '5', 'outof': '5'} (100%) Good
+	{'page': '3', 'name': 'Q7', 'grade': '7', 'outof': '7'} (100%) Good
+	{'page': '3', 'name': 'Q8', 'grade': '0', 'outof': '8'} ( 0%) NG
+	{'page': '4', 'name': 'Q9a', 'grade': '0', 'outof': '5'} ( 0%) Good
+	{'page': '4', 'name': 'Q9b', 'grade': '5', 'outof': '6'} (83%) Solution set are restricted to whole numbers.
+	{'page': '4', 'name': 'Q10a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '4', 'name': 'Q10b', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '5', 'name': 'Q11a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '5', 'name': 'Q11b', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '5', 'name': 'Q12', 'grade': '8', 'outof': '8'} (100%) Good
+	{'page': '5', 'name': 'Q13', 'grade': '5', 'outof': '8'} (62%) You need to use the slant height.
+	{'page': '6', 'name': 'Q14PQ', 'grade': '0', 'outof': '3'} ( 0%) Blank
+	{'page': '6', 'name': 'Q14A', 'grade': '0', 'outof': '3'} ( 0%) Blank
+	{'page': '6', 'name': 'Q14V', 'grade': '0', 'outof': '2'} ( 0%) Blank
+	{'page': '6', 'name': 'Bonus', 'grade': '0', 'outof': '3'} ( 0%) Blank
+>>0
+65/103 Photograph, Incomplete submission, missing Page 6.
+{'lastname': 'Starr', 'firstname': 'Diggy', 'username': '', 'order': '1.2'}
+	{'type': 'Photograph', 'time': '', 'grade': '-'}
+	This is a decently done submission. Please check the last two pages given there are some issues regarding your application with these formulas.
+	{'page': '1', 'name': 'Q1a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '1', 'name': 'Q1b', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '1', 'name': 'Q2', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '2', 'name': 'Q3', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '2', 'name': 'Q4', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '2', 'name': 'Q5a', 'grade': '1', 'outof': '4'} (25%) NG. This is a perimeter problem.
+	{'page': '2', 'name': 'Q5b', 'grade': '1', 'outof': '2'} (50%) Length is NG
+	{'page': '3', 'name': 'Q6', 'grade': '5', 'outof': '5'} (100%) Good
+	{'page': '3', 'name': 'Q7', 'grade': '7', 'outof': '7'} (100%) Good
+	{'page': '3', 'name': 'Q8', 'grade': '8', 'outof': '8'} (100%) Good
+	{'page': '4', 'name': 'Q9a', 'grade': '3', 'outof': '5'} (60%) The actual answer involves only whole number values.
+	{'page': '4', 'name': 'Q9b', 'grade': '5', 'outof': '6'} (83%) The actual answer involves only whole number values.
+	{'page': '4', 'name': 'Q10a', 'grade': '2', 'outof': '4'} (50%) Forgot to square root the 0.25.
+	{'page': '4', 'name': 'Q10b', 'grade': '3', 'outof': '4'} (75%) Good, but show your work.
+	{'page': '5', 'name': 'Q11a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '5', 'name': 'Q11b', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '5', 'name': 'Q12', 'grade': '3', 'outof': '8'} (38%) Wrong formula. You have to apply the semicircule arc formula twice, and add that to the straight 10cm length.
+	{'page': '5', 'name': 'Q13', 'grade': '3', 'outof': '8'} (38%) Wrong formula.
+	{'page': '6', 'name': 'Q14PQ', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '6', 'name': 'Q14A', 'grade': '2', 'outof': '3'} (67%) Good, but show your work.
+	{'page': '6', 'name': 'Q14V', 'grade': '0', 'outof': '2'} ( 0%) Blank
+	{'page': '6', 'name': 'Bonus', 'grade': '0', 'outof': '3'} ( 0%) Blank
+>>0
+77/103 Photograph, This is a decently done submission. Please check the last two pages given there are some issues regarding your application with these formulas.
+{'lastname': 'Pear', 'firstname': 'Papa', 'username': '', 'order': '1.3'}
+	{'type': 'Photograph', 'time': '1314', 'grade': '-3'}
+	The submission was 15 minutes late.
+	{'page': '1', 'name': 'Q1a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '1', 'name': 'Q1b', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '1', 'name': 'Q2', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '2', 'name': 'Q3', 'grade': '0', 'outof': '4'} ( 0%) NG
+	{'page': '2', 'name': 'Q4', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '2', 'name': 'Q5a', 'grade': '3', 'outof': '4'} (75%) Good but not in simplest form
+	{'page': '2', 'name': 'Q5b', 'grade': '2', 'outof': '2'} (100%) Good
+	{'page': '3', 'name': 'Q6', 'grade': '5', 'outof': '5'} (100%) Good
+	{'page': '3', 'name': 'Q7', 'grade': '7', 'outof': '7'} (100%) Good
+	{'page': '3', 'name': 'Q8', 'grade': '8', 'outof': '8'} (100%) Good
+	{'page': '4', 'name': 'Q9a', 'grade': '5', 'outof': '5'} (100%) Good
+	{'page': '4', 'name': 'Q9b', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '4', 'name': 'Q10a', 'grade': '3', 'outof': '4'} (75%) Good, but not in simplest form.
+	{'page': '4', 'name': 'Q10b', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '5', 'name': 'Q11a', 'grade': '4', 'outof': '4'} (100%) Good`
+	{'page': '5', 'name': 'Q11b', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '5', 'name': 'Q12', 'grade': '3', 'outof': '8'} (38%) You probably forgot to sum up the arc segments and forgot the straight segment.
+	{'page': '5', 'name': 'Q13', 'grade': '7', 'outof': '8'} (88%) Error on column 2 line 2.
+	{'page': '6', 'name': 'Q14PQ', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '6', 'name': 'Q14A', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '6', 'name': 'Q14V', 'grade': '2', 'outof': '2'} (100%) Good
+	{'page': '6', 'name': 'Bonus', 'grade': '2', 'outof': '3'} (67%) +/- error
+>>-3
+90/103 Photograph, The submission was 15 minutes late.
+{'lastname': 'Crush', 'firstname': 'Candy', 'username': '', 'order': '1.1'}
+	{'type': 'Scan', 'time': '', 'grade': '-'}
+	
+	{'page': '1', 'name': 'Q1a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '1', 'name': 'Q1b', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '1', 'name': 'Q2', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '2', 'name': 'Q3', 'grade': '3', 'outof': '4'} (75%) You expressed the next t in terms of the previous t.
+	{'page': '2', 'name': 'Q4', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '2', 'name': 'Q5a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '2', 'name': 'Q5b', 'grade': '2', 'outof': '2'} (100%) Good
+	{'page': '3', 'name': 'Q6', 'grade': '5', 'outof': '5'} (100%) Good
+	{'page': '3', 'name': 'Q7', 'grade': '7', 'outof': '7'} (100%) Good
+	{'page': '3', 'name': 'Q8', 'grade': '8', 'outof': '8'} (100%) Good
+	{'page': '4', 'name': 'Q9a', 'grade': '3', 'outof': '5'} (60%) Incorrect inequality
+	{'page': '4', 'name': 'Q9b', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '4', 'name': 'Q10a', 'grade': '3', 'outof': '4'} (75%) Good
+	{'page': '4', 'name': 'Q10b', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '5', 'name': 'Q11a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '5', 'name': 'Q11b', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '5', 'name': 'Q12', 'grade': '3', 'outof': '8'} (38%) This is a sum problem.
+	{'page': '5', 'name': 'Q13', 'grade': '8', 'outof': '8'} (100%) Good
+	{'page': '6', 'name': 'Q14PQ', 'grade': '1', 'outof': '3'} (33%) NG
+	{'page': '6', 'name': 'Q14A', 'grade': '0', 'outof': '3'} ( 0%) NG
+	{'page': '6', 'name': 'Q14V', 'grade': '2', 'outof': '2'} (100%) OK due to formula
+	{'page': '6', 'name': 'Bonus', 'grade': '1', 'outof': '3'} (33%) NG
+>>0
+87/103 Scan, 
+{'lastname': 'Roberts', 'firstname': 'Tiffi', 'username': '', 'order': '1.2'}
+	{'type': 'Scan', 'time': '', 'grade': '-'}
+	
+	{'page': '1', 'name': 'Q1a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '1', 'name': 'Q1b', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '1', 'name': 'Q2', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '2', 'name': 'Q3', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '2', 'name': 'Q4', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '2', 'name': 'Q5a', 'grade': '1', 'outof': '4'} (25%) NG. This is a perimeter problem.
+	{'page': '2', 'name': 'Q5b', 'grade': '1', 'outof': '2'} (50%) OK
+	{'page': '3', 'name': 'Q6', 'grade': '5', 'outof': '5'} (100%) Good
+	{'page': '3', 'name': 'Q7', 'grade': '7', 'outof': '7'} (100%) Good
+	{'page': '3', 'name': 'Q8', 'grade': '8', 'outof': '8'} (100%) Good
+	{'page': '4', 'name': 'Q9a', 'grade': '5', 'outof': '5'} (100%) Good
+	{'page': '4', 'name': 'Q9b', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '4', 'name': 'Q10a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '4', 'name': 'Q10b', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '5', 'name': 'Q11a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '5', 'name': 'Q11b', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '5', 'name': 'Q12', 'grade': '8', 'outof': '8'} (100%) Good
+	{'page': '5', 'name': 'Q13', 'grade': '8', 'outof': '8'} (100%) Good
+	{'page': '6', 'name': 'Q14PQ', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '6', 'name': 'Q14A', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '6', 'name': 'Q14V', 'grade': '2', 'outof': '2'} (100%) Good
+	{'page': '6', 'name': 'Bonus', 'grade': '', 'outof': '3'} (-100%) Good
+>>0
+96/103 Scan, 
+{'lastname': 'Yeti', 'firstname': 'Jarek', 'username': '', 'order': '1.3'}
+	{'type': 'Typed', 'time': '', 'grade': '-5'}
+	15 minutes late.
+	{'page': '1', 'name': 'Q1a', 'grade': '4', 'outof': '4'} (100%) 
+	{'page': '1', 'name': 'Q1b', 'grade': '4', 'outof': '4'} (100%) 
+	{'page': '1', 'name': 'Q2', 'grade': '6', 'outof': '6'} (100%) 
+	{'page': '2', 'name': 'Q3', 'grade': '2', 'outof': '4'} (50%) Not clear where is x
+	{'page': '2', 'name': 'Q4', 'grade': '6', 'outof': '6'} (100%) Good
+	{'page': '2', 'name': 'Q5a', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '2', 'name': 'Q5b', 'grade': '1', 'outof': '2'} (50%) Switched width and length
+	{'page': '3', 'name': 'Q6', 'grade': '5', 'outof': '5'} (100%) Good
+	{'page': '3', 'name': 'Q7', 'grade': '7', 'outof': '7'} (100%) Good
+	{'page': '3', 'name': 'Q8', 'grade': '4', 'outof': '8'} (50%) Wrong application of algebra
+	{'page': '4', 'name': 'Q9a', 'grade': '4', 'outof': '5'} (80%) This is an inequality
+	{'page': '4', 'name': 'Q9b', 'grade': '1', 'outof': '6'} (17%) NG
+	{'page': '4', 'name': 'Q10a', 'grade': '1', 'outof': '4'} (25%) NG, on line 2
+	{'page': '4', 'name': 'Q10b', 'grade': '4', 'outof': '4'} (100%) Good
+	{'page': '5', 'name': 'Q11a', 'grade': '3', 'outof': '4'} (75%) Close
+	{'page': '5', 'name': 'Q11b', 'grade': '1', 'outof': '3'} (33%) NG since you used the hypotenuse not the leg
+	{'page': '5', 'name': 'Q12', 'grade': '4', 'outof': '8'} (50%) This is not a subtraction problem. You missed the straight segment. However, you did use the formula for calculating an arc of a semicircle given the radius.
+	{'page': '5', 'name': 'Q13', 'grade': '3', 'outof': '8'} (38%) Incorrect formula for calculating the slant length.
+	{'page': '6', 'name': 'Q14PQ', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '6', 'name': 'Q14A', 'grade': '3', 'outof': '3'} (100%) Good
+	{'page': '6', 'name': 'Q14V', 'grade': '2', 'outof': '2'} (100%) Good
+	{'page': '6', 'name': 'Bonus', 'grade': '', 'outof': '3'} (-100%) Blank
+>>-5
+72/103 Typed, 15 minutes late.
+Betty	Alpha	- 	4 	4 	6 	4 	0 	1 	1 	5 	7 	0 	0 	5 	4 	4 	4 	3 	8 	5 	0 	0 	0 	0 	65	65
+Starr	Diggy	- 	4 	4 	6 	4 	6 	1 	1 	5 	7 	8 	3 	5 	2 	3 	4 	3 	3 	3 	3 	2 	0 	0 	77	77
+Pear	Papa	-3 	4 	4 	6 	0 	6 	3 	2 	5 	7 	8 	5 	6 	3 	4 	4 	3 	3 	7 	3 	3 	2 	2 	90	87
+Crush	Candy	- 	4 	4 	6 	3 	6 	4 	2 	5 	7 	8 	3 	6 	3 	4 	4 	3 	3 	8 	1 	0 	2 	1 	87	87
+Roberts	Tiffi	- 	4 	4 	6 	4 	6 	1 	1 	5 	7 	8 	5 	6 	4 	4 	4 	3 	8 	8 	3 	3 	2 	 	96	96
+Yeti	Jarek	-5 	4 	4 	6 	2 	6 	4 	1 	5 	7 	4 	4 	1 	1 	4 	3 	1 	4 	3 	3 	3 	2 	 	72	67
+
+
